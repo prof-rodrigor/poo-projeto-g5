@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Nova Empresa</title>
+</head>
+<body>
+<section>
+    <h2 class="mt-5">Nova Empresa</h2>
+    <form action="/empresas" method="post">
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" required>
+        </div>
+        <div class="mb-3">
+            <label for="site" class="form-label">Site</label>
+            <textarea class="form-control" id="site" name="site" rows="1" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="instagram" class="form-label">Instagram</label>
+            <textarea class="form-control" id="instagram" name="instagram" rows="1" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="linkedin" class="form-label">Linkedin</label>
+            <textarea class="form-control" id="linkedin" name="linkedin" rows="1" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="github" class="form-label">Github</label>
+            <textarea class="form-control" id="github" name="github" rows="1" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone</label>
+            <textarea class="form-control" id="telefone" name="telefone" rows="1" required></textarea>
+        </div>
+        <h2 class="mt-5">Endereço</h2>
+        <div class="mb-3">
+            <label for="cidade" class="form-label">Telefone</label>
+            <textarea class="form-control" id="cidade" name="cidade" rows="1" required></textarea>
+        </div>
+        <div>
+            <label for="estado">Escolha o estado:</label>
+            <select id="estado" name="estado">
+                <option value="">Selecione um estado</option>
+                <option value="AC">Acre</option>
+                <option value="AL">Alagoas</option>
+                <option value="AP">Amapá</option>
+                <option value="AM">Amazonas</option>
+                <option value="BA">Bahia</option>
+                <option value="CE">Ceará</option>
+                <option value="DF">Distrito Federal</option>
+                <option value="ES">Espírito Santo</option>
+                <option value="GO">Goiás</option>
+                <option value="MA">Maranhão</option>
+                <option value="MT">Mato Grosso</option>
+                <option value="MS">Mato Grosso do Sul</option>
+                <option value="MG">Minas Gerais</option>
+                <option value="PA">Pará</option>
+                <option value="PB">Paraíba</option>
+                <option value="PR">Paraná</option>
+                <option value="PE">Pernambuco</option>
+                <option value="PI">Piauí</option>
+                <option value="RJ">Rio de Janeiro</option>
+                <option value="RN">Rio Grande do Norte</option>
+                <option value="RS">Rio Grande do Sul</option>
+                <option value="RO">Rondônia</option>
+                <option value="RR">Roraima</option>
+                <option value="SC">Santa Catarina</option>
+                <option value="SP">São Paulo</option>
+                <option value="SE">Sergipe</option>
+                <option value="TO">Tocantins</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="rua" class="form-label">Telefone</label>
+            <textarea class="form-control" id="rua" name="rua" rows="1" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="numero" class="form-label">Telefone</label>
+            <textarea class="form-control" id="numero" name="numero" rows="1" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="complemento" class="form-label">Telefone</label>
+            <textarea class="form-control" id="complemento" name="complemento" rows="1" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="/empresas" class="btn btn-secondary">Cancelar</a>
+    </form>
+</section>
+</body>
+</html>

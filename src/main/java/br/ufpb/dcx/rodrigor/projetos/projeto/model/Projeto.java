@@ -1,23 +1,34 @@
 package br.ufpb.dcx.rodrigor.projetos.projeto.model;
 
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.CategoriaParticipante;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Projeto {
     private String id;
     private String nome;
     private String descricao;
+    private Categoria categoria;
+    private List<Participante> participantes;
     private Participante coordenador;
+    private Empresa empresa;
     private LocalDate dataInicio;
     private LocalDate dataEncerramento;
 
-    public Projeto(String id, String nome, String descricao, Participante coordenador, LocalDate dataInicio, LocalDate dataEncerramento) {
+    public Projeto(String id, String nome, String descricao, Categoria categoria, List<Participante> participantes, Participante coordenador, Empresa empresa, LocalDate dataInicio, LocalDate dataEncerramento) {
+        testaNumero(id);
+        testaEntrada(nome);
+        testaEntrada(descricao);
         this.id = id;
         this.nome = nome;
-        this.coordenador = coordenador;
         this.descricao = descricao;
+        this.categoria = categoria;
+        this.participantes = participantes;
+        this.coordenador = coordenador;
+        this.empresa = empresa;
         this.dataInicio = dataInicio;
         this.dataEncerramento = dataEncerramento;
     }
@@ -25,11 +36,49 @@ public class Projeto {
     public Projeto() {
     }
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public List<Participante> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<Participante> participantes) {
+        this.participantes = participantes;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public void testaEntrada(String x){
+        if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
+    }
+
+    public void testaNumero(String x) {
+        for (int i = 0; i < x.length(); i++) {
+            char c = x.charAt(i);
+            if (!Character.isDigit(c)) {
+                throw new IllegalArgumentException("O número informado contém valores que não são números.");
+            }
+        }
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
+        testaNumero(id);
         this.id = id;
     }
 
@@ -49,6 +98,7 @@ public class Projeto {
     }
 
     public void setNome(String nome) {
+        testaEntrada(nome);
         this.nome = nome;
     }
 
@@ -57,6 +107,7 @@ public class Projeto {
     }
 
     public void setDescricao(String descricao) {
+        testaEntrada(descricao);
         this.descricao = descricao;
     }
 
