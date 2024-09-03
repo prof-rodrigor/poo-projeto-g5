@@ -164,6 +164,8 @@ public class App {
         app.post("/participantes", participanteController::adicionarParticipante);
         app.get("/participantes/{id}/remover", participanteController::removerParticipante);
 
+
+
     }
 
     private Properties carregarPropriedades() {

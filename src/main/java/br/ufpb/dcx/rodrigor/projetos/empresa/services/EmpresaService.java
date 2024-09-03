@@ -18,19 +18,16 @@ import java.util.Optional;
 import static com.mongodb.client.model.Filters.eq;
 
 public class EmpresaService {
-    private final MongoCollection<Document> collection;
-    private final ParticipanteService participanteService;
+    private MongoCollection<Document> collection;
+    private ParticipanteService participanteService;
 
     private static final Logger logger = LogManager.getLogger();
 
-    public ProjetoService(MongoDBConnector mongoDBConnector, ParticipanteService participanteService) {
-        super(mongoDBConnector);
-        this.participanteService = participanteService;
+    public EmpresaService(MongoDBConnector mongoDBConnector) {
+        super();
         MongoDatabase database = mongoDBConnector.getDatabase("projetos");
-        this.collection = database.getCollection("projetos");
+        this.collection = database.getCollection("empresas");
     }
-
-
 
     public List<Projeto> listarProjetos() {
         List<Projeto> projetos = new ArrayList<>();

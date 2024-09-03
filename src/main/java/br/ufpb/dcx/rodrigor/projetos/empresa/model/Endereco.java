@@ -3,21 +3,16 @@ package br.ufpb.dcx.rodrigor.projetos.empresa.model;
 public class Endereco {
     private String cidade, estado, rua, numero, complemento;
 
+    public Endereco() {}
+
     public Endereco(String cidade, String estado, String rua, String numero) {
-        testaEntrada(cidade);
-        testaEntrada(estado);
-        testaEntrada(rua);
-        testaNumero(numero);
         this.cidade = cidade;
         this.estado = estado;
         this.rua = rua;
         this.numero = numero;
     }
 
-    public Endereco() {
-    }
-
-    public void testaEntrada(String x){
+    /* public void testaEntrada(String x){
         if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
     }
 
@@ -28,13 +23,13 @@ public class Endereco {
                 throw new IllegalArgumentException("O número informado contém valores que não são números.");
             }
         }
-    }
+    } */
+
     public String getCidade() {
         return cidade;
     }
 
     public void setCidade(String cidade) {
-        testaEntrada(cidade);
         this.cidade = cidade;
     }
 
@@ -43,7 +38,6 @@ public class Endereco {
     }
 
     public void setEstado(String estado) {
-        testaEntrada(estado);
         this.estado = estado;
     }
 
@@ -52,7 +46,6 @@ public class Endereco {
     }
 
     public void setRua(String rua) {
-        testaEntrada(rua);
         this.rua = rua;
     }
 
@@ -61,7 +54,6 @@ public class Endereco {
     }
 
     public void setNumero(String numero) {
-        testaNumero(numero);
         this.numero = numero;
     }
 
