@@ -167,6 +167,7 @@ public class App {
 
         EmpresaController empresaController = new EmpresaController();
         app.get("/empresas", empresaController::listarEmpresas);
+        app.get("/empresas/novo", empresaController::mostrarFormulario);
         app.post("/empresas", empresaController::adicionarEmpresa);
         app.get("/empresas/{id}/remover", empresaController::removerEmpresa);
 

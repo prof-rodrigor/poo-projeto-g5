@@ -13,6 +13,11 @@ public class EmpresaController {
         ctx.render("/empresas/lista_empresas.html");
     }
 
+    public void mostrarFormulario(Context ctx) {
+        ctx.attribute("empresas", empresaService.listarEmpresas());
+        ctx.render("/empresas/form_empresa.html");
+    }
+
     public void adicionarEmpresa(Context ctx) {
         try {
             Empresa empresa = new Empresa();
@@ -24,15 +29,15 @@ public class EmpresaController {
             empresa.setTelefone(ctx.formParam("telefone"));
 
             Endereco endereco = new Endereco();
-            endereco.setCidade(ctx.formParam("endereco.cidade"));
-            endereco.setEstado(ctx.formParam("endereco.estado"));
-            endereco.setBairro(ctx.formParam("endereco.bairro"));
-            endereco.setRua(ctx.formParam("endereco.rua"));
-            endereco.setNumero(ctx.formParam("endereco.numero"));
+            endereco.setCidade(ctx.formParam("cidade"));
+            endereco.setEstado(ctx.formParam("estado"));
+            endereco.setBairro(ctx.formParam("bairro"));
+            endereco.setRua(ctx.formParam("rua"));
+            endereco.setNumero(ctx.formParam("numero"));
             empresa.setEndereco(endereco);
 
             empresaService.adicionarEmpresa(empresa);
-            ctx.render("/empresas");
+            ctx.redirect("/empresas");
         } catch (Exception e) {
             ctx.status(500);
             ctx.result("Erro ao adicionar empresa: " + e.getMessage());
@@ -43,6 +48,6 @@ public class EmpresaController {
     public void removerEmpresa(Context ctx) {
         Long id = Long.parseLong(ctx.pathParam("id"));
         empresaService.removerEmpresa(id);
-        ctx.render("/empresas");
+        ctx.redirect("/empresas");
     }
 }
