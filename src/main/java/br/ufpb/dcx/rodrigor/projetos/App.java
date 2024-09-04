@@ -1,6 +1,7 @@
 package br.ufpb.dcx.rodrigor.projetos;
 
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
+import br.ufpb.dcx.rodrigor.projetos.empresa.controllers.EmpresaController;
 import br.ufpb.dcx.rodrigor.projetos.login.LoginController;
 import br.ufpb.dcx.rodrigor.projetos.participante.controllers.ParticipanteController;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
@@ -163,6 +164,11 @@ public class App {
         app.get("/participantes/novo", participanteController::mostrarFormularioCadastro);
         app.post("/participantes", participanteController::adicionarParticipante);
         app.get("/participantes/{id}/remover", participanteController::removerParticipante);
+
+        EmpresaController empresaController = new EmpresaController();
+        app.get("/empresas", empresaController::listarEmpresas);
+        app.post("/empresas", empresaController::adicionarEmpresa);
+        app.get("/empresas/{id}/remover", empresaController::removerEmpresa);
 
 
 

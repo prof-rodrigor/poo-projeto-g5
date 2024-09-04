@@ -8,6 +8,7 @@ public class Endereco {
     public Endereco(String cidade, String estado, String bairro, String rua, String numero) {
         this.cidade = cidade;
         this.estado = estado;
+        this.bairro = bairro;
         this.rua = rua;
         this.numero = numero;
     }
@@ -71,5 +72,14 @@ public class Endereco {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    @Override
+    public String toString() {
+        return cidade + " - " +
+                estado + "\n" +
+                rua + ", " +
+                bairro + ", " +
+                numero;
     }
 }
