@@ -1,6 +1,8 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.services;
 
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Endereco;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
 import br.ufpb.dcx.rodrigor.projetos.projeto.model.Projeto;
@@ -18,80 +20,43 @@ import java.util.Optional;
 import static com.mongodb.client.model.Filters.eq;
 
 public class EmpresaService {
-    private MongoCollection<Document> collection;
-    private ParticipanteService participanteService;
+    private List<Empresa> empresas = new ArrayList<>();
+    private Long ultimoId = 1L;
 
-    private static final Logger logger = LogManager.getLogger();
+    public EmpresaService() {
+        Endereco e1 = new Endereco("João Pessoa", "Paraíba", "Ipês", "Rua Empresário Clóvis Rolim", "Bloco A, Sala 3001");
+        empresas.add(new Empresa(ultimoId++,
+                "Phoebus Tecnologia",
+                "phoebus.com.br",
+                "@phoebustecnologia",
+                "linkedin.com/phoebustecnologia",
+                "github.com/phoebustech",
+                "(83) 9 1234-5678",
+                e1));
 
-    public EmpresaService(MongoDBConnector mongoDBConnector) {
-        super();
-        MongoDatabase database = mongoDBConnector.getDatabase("projetos");
-        this.collection = database.getCollection("empresas");
+        Endereco e2 = new Endereco("João Pessoa", "Paraíba", "Jaguaribe", "Av. João da Mata", "200");
+        empresas.add(new Empresa(ultimoId++,
+                "CODATA",
+                "codata.pb.gov.br",
+                "@codatapbgov",
+                "linkedin.com/codatapbgov",
+                "github.com/codatapbgov",
+                "(83) 3208-4450",
+                e2));
     }
 
-    public List<Projeto> listarProjetos() {
-        List<Projeto> projetos = new ArrayList<>();
-        for (Document doc : collection.find()) {
-            projetos.add(documentToProjeto(doc));
-        }
-        return projetos;
+    public List<Empresa> listarEmpresas() {
+        return empresas;
     }
 
-    public Optional<Projeto> buscarProjetoPorId(String id) {
-        Document doc = collection.find(eq("_id", new ObjectId(id))).first();
-        return Optional.ofNullable(doc).map(this::documentToProjeto);
+    public void adicionarEmpresa(Empresa empresa) {
+        empresa.setId(ultimoId++);
+        empresas.add(empresa);
     }
 
-    public void adicionarProjeto(Projeto projeto) {
-        Document doc = projetoToDocument(projeto);
-        collection.insertOne(doc);
-        projeto.setId(doc.getObjectId("_id").toString());
+    public void atualizarEmpresa(Empresa empresaAtualizada) {
+        empresas.replaceAll(empresa -> empresa.getId().equals(empresaAtualizada.getId()) ? empresaAtualizada : empresa);
     }
 
-    public void atualizarProjeto(Projeto projetoAtualizado) {
-        Document doc = projetoToDocument(projetoAtualizado);
-        collection.replaceOne(eq("_id", new ObjectId(projetoAtualizado.getId())), doc);
+    public void removerEmpresa(Long id) {empresas.removeIf(empresa -> empresa.getId().equals(id));}
     }
-
-    public void removerProjeto(String id) {
-        collection.deleteOne(eq("_id", new ObjectId(id)));
-    }
-
-    public Projeto documentToProjeto(Document doc) {
-        Projeto projeto = new Projeto();
-        projeto.setId(doc.getObjectId("_id").toString());
-        projeto.setNome(doc.getString("nome"));
-        projeto.setDescricao(doc.getString("descricao"));
-        projeto.setDataInicio(doc.getDate("dataInicio").toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
-        projeto.setDataEncerramento(doc.getDate("dataEncerramento").toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
-
-        ObjectId coordenadorId = doc.getObjectId("coordenador");
-        if(coordenadorId == null) {
-            logger.warn("Projeto '{}' não possui coordenador", projeto.getNome());
-        }
-        if (coordenadorId != null) {
-            Participante coordenador = participanteService.buscarParticipantePorId(coordenadorId.toString())
-                    .orElse(null);
-            projeto.setCoordenador(coordenador);
-        }
-
-        return projeto;
-    }
-
-    public Document projetoToDocument(Projeto projeto) {
-        Document doc = new Document();
-        if (projeto.getId() != null) {
-            doc.put("_id", new ObjectId(projeto.getId()));
-        }
-        doc.put("nome", projeto.getNome());
-        doc.put("descricao", projeto.getDescricao());
-        doc.put("dataInicio", java.util.Date.from(projeto.getDataInicio().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
-        doc.put("dataEncerramento", java.util.Date.from(projeto.getDataEncerramento().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
-
-        if (projeto.getCoordenador() != null) {
-            doc.put("coordenador", new ObjectId(String.valueOf(projeto.getCoordenador().getId())));
-        }
-
-        return doc;
-    }
-}

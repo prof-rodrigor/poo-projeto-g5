@@ -1,11 +1,11 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.model;
 
 public class Endereco {
-    private String cidade, estado, rua, numero, complemento;
+    private String cidade, estado, bairro, rua, numero, complemento;
 
     public Endereco() {}
 
-    public Endereco(String cidade, String estado, String rua, String numero) {
+    public Endereco(String cidade, String estado, String bairro, String rua, String numero) {
         this.cidade = cidade;
         this.estado = estado;
         this.rua = rua;
@@ -39,6 +39,14 @@ public class Endereco {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
     }
 
     public String getRua() {

@@ -1,6 +1,7 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.controllers;
 
 import br.ufpb.dcx.rodrigor.projetos.Keys;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.CategoriaParticipante;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class EmpresaController {
+
     public void listarEmpresas(Context ctx) {
         ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
         ctx.attribute("empresas", projetoService.listarProjetos());
