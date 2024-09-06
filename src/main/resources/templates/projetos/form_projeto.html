@@ -25,6 +25,16 @@
             </select>
         </div>
         <div class="mb-3">
+            <label for="empresa" class="form-label">Coordenador</label>
+            <select class="form-select" id="empresa" name="empresa" required>
+                <option value="">Selecione a empresa vinculada ao projeto</option>
+                <th:block th:each="empresa : ${empresas}">
+                    <option th:value="${professor.nome}" th:text="${empresa.nome}"></option>
+                </th:block>
+                <option value="Sem empresa vinculada">Não há empresa vinculada ao projeto</option>
+            </select>
+        </div>
+        <div class="mb-3">
             <label for="dataInicio" class="form-label">Data de Início</label>
             <input type="date" class="form-control" id="dataInicio" name="dataInicio" required>
         </div>

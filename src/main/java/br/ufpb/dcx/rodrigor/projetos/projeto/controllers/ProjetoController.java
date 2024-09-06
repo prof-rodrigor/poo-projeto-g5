@@ -1,6 +1,7 @@
 package br.ufpb.dcx.rodrigor.projetos.projeto.controllers;
 
 import br.ufpb.dcx.rodrigor.projetos.Keys;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.CategoriaParticipante;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
@@ -23,6 +24,8 @@ public class ProjetoController {
     public void mostrarFormulario(Context ctx) {
         ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
         ctx.attribute("professores", participanteService.listarProfessores());
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        ctx.attribute("empresas", empresaService.listarEmpresas());
         ctx.render("/projetos/form_projeto.html");
     }
 
