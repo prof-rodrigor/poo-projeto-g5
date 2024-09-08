@@ -22,6 +22,8 @@ import static com.mongodb.client.model.Filters.eq;
 public class EmpresaService {
     private List<Empresa> empresas = new ArrayList<>();
     private Long ultimoId = 1L;
+    private Empresa projetoSemEmpresa = new Empresa("Não há empresa vinculada ao projeto"); //Empresa utilizada como parametro para projetos que não possuem empresas vinvuladas;
+
 
     public EmpresaService() {
         Endereco e1 = new Endereco("João Pessoa", "Paraíba", "Ipês", "Rua Empresário Clóvis Rolim", "Bloco A, Sala 3001");
@@ -45,6 +47,7 @@ public class EmpresaService {
                 e2));
     }
 
+
     public List<Empresa> listarEmpresas() {
         return empresas;
     }
@@ -59,4 +62,17 @@ public class EmpresaService {
     }
 
     public void removerEmpresa(Long id) {empresas.removeIf(empresa -> empresa.getId().equals(id));}
+
+    public Empresa buscarEmpresaPorId(String id){
+        Empresa empresa = null;
+        Long idSemEmpresa = 0L;
+        if (id.equals(idSemEmpresa.toString())) {
+            empresa = projetoSemEmpresa;
+            empresa.setId(idSemEmpresa);
+        }
+        for (Empresa empresaX : empresas) {
+            if (String.valueOf(empresaX.getId()).equals(id)) empresa = empresaX;
+        }
+        return empresa;
+    }
     }

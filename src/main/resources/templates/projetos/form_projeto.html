@@ -25,11 +25,11 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="empresa" class="form-label">Coordenador</label>
+            <label for="empresa" class="form-label">Empresa</label>
             <select class="form-select" id="empresa" name="empresa" required>
                 <option value="">Selecione a empresa vinculada ao projeto</option>
                 <th:block th:each="empresa : ${empresas}">
-                    <option th:value="${professor.nome}" th:text="${empresa.nome}"></option>
+                    <option th:value="${empresa.id}" th:text="${empresa.nome}"></option>
                 </th:block>
                 <option value="Sem empresa vinculada">Não há empresa vinculada ao projeto</option>
             </select>

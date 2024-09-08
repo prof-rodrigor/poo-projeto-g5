@@ -2,6 +2,8 @@ package br.ufpb.dcx.rodrigor.projetos.projeto.services;
 
 import br.ufpb.dcx.rodrigor.projetos.AbstractService;
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
 import br.ufpb.dcx.rodrigor.projetos.projeto.model.Projeto;
@@ -22,12 +24,14 @@ public class ProjetoService extends AbstractService {
 
     private final MongoCollection<Document> collection;
     private final ParticipanteService participanteService;
+    private final EmpresaService empresaService;
 
     private static final Logger logger = LogManager.getLogger();
 
-    public ProjetoService(MongoDBConnector mongoDBConnector, ParticipanteService participanteService) {
+    public ProjetoService(MongoDBConnector mongoDBConnector, ParticipanteService participanteService, EmpresaService empresaService) {
         super(mongoDBConnector);
         this.participanteService = participanteService;
+        this.empresaService = empresaService;
         MongoDatabase database = mongoDBConnector.getDatabase("projetos");
         this.collection = database.getCollection("projetos");
     }
@@ -80,6 +84,10 @@ public class ProjetoService extends AbstractService {
             projeto.setCoordenador(coordenador);
         }
 
+        ObjectId empresaId = doc.getObjectId("empresa");
+        Empresa empresa = empresaService.buscarEmpresaPorId(empresaId.toString());
+        projeto.setEmpresa(empresa);
+
         return projeto;
     }
 
@@ -90,6 +98,7 @@ public class ProjetoService extends AbstractService {
         }
         doc.put("nome", projeto.getNome());
         doc.put("descricao", projeto.getDescricao());
+        doc.put("empresa", new ObjectId(String.valueOf(projeto.getEmpresa().getId())));
         doc.put("dataInicio", java.util.Date.from(projeto.getDataInicio().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
         doc.put("dataEncerramento", java.util.Date.from(projeto.getDataEncerramento().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
 

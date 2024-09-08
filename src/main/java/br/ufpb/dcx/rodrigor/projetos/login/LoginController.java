@@ -24,7 +24,8 @@ public class LoginController {
         String senha = ctx.formParam("senha");
 
         if (usuarioExemplo.getLogin().equals(login) && usuarioExemplo.getSenha().equals(senha)) {
-            ctx.sessionAttribute("usuario", usuarioExemplo);
+            // Coloca o usuário na sessão
+            ctx.cookie("usuario_autenticado", "true", 3600);
             logger.info("Usuário '{}' autenticado com sucesso.", login);
             ctx.redirect("/area-interna");
         } else {
@@ -32,9 +33,10 @@ public class LoginController {
             ctx.redirect("/login");
         }
     }
-
     public void logout(Context ctx) {
-        ctx.sessionAttribute("usuario", null);
+        // Remove o usuário da sessão
+        ctx.removeCookie("usuario_autenticado");
+        logger.info("Usuário deslogado com sucesso.");
         ctx.redirect("/login");
     }
 }

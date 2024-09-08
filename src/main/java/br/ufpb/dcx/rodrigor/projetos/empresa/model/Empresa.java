@@ -8,6 +8,10 @@ public class Empresa {
 
     public Empresa() {}
 
+    public Empresa(String nome){
+        this.nome = nome;
+    }
+
     public Empresa(Long id, String nome, String site, String instagram, String linkedin, String github, String telefone, Endereco endereco) {
         this.id = id;
         this.nome = nome;

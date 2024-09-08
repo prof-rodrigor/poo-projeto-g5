@@ -1,6 +1,7 @@
 package br.ufpb.dcx.rodrigor.projetos.projeto.controllers;
 
 import br.ufpb.dcx.rodrigor.projetos.Keys;
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
 import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.CategoriaParticipante;
 import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
@@ -32,6 +33,7 @@ public class ProjetoController {
     public void adicionarProjeto(Context ctx) {
         ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
         ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
 
         Projeto projeto = new Projeto();
         projeto.setNome(ctx.formParam("nome"));
@@ -51,6 +53,16 @@ public class ProjetoController {
             throw new IllegalArgumentException("Somente professores podem ser coordenadores.");
         }
 
+        String empresaId = ctx.formParam("empresa");
+        Empresa empresa = new Empresa();
+        if (empresaId.equals("Sem empresa viculada")) {
+            empresa.setNome("Não há empresa vinculada ao projeto");
+            empresa.setId(0L);
+        } else {
+            empresa = empresaService.buscarEmpresaPorId(empresaId);
+        }
+
+        projeto.setEmpresa(empresa);
         projeto.setCoordenador(coordenador);
         projetoService.adicionarProjeto(projeto);
         ctx.redirect("/projetos");
