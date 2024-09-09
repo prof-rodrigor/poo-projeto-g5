@@ -26,6 +26,8 @@ public class ProjetoService extends AbstractService {
     private final ParticipanteService participanteService;
     private final EmpresaService empresaService;
 
+    private Long ultimoId = 1L;
+
     private static final Logger logger = LogManager.getLogger();
 
     public ProjetoService(MongoDBConnector mongoDBConnector, ParticipanteService participanteService, EmpresaService empresaService) {

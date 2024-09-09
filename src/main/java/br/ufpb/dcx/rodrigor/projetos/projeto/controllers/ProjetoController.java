@@ -55,7 +55,7 @@ public class ProjetoController {
 
         String empresaId = ctx.formParam("empresa");
         Empresa empresa = new Empresa();
-        if (empresaId.equals("Sem empresa viculada")) {
+        if (empresaId.equals("Sem empresa vinculada")) {
             empresa.setNome("Não há empresa vinculada ao projeto");
             empresa.setId(0L);
         } else {

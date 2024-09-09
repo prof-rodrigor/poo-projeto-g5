@@ -19,7 +19,6 @@ public class Projeto {
     private LocalDate dataEncerramento;
 
     public Projeto(String id, String nome, String descricao, Categoria categoria, List<Participante> participantes, Participante coordenador, Empresa empresa, LocalDate dataInicio, LocalDate dataEncerramento) {
-        testaNumero(id);
         testaEntrada(nome);
         testaEntrada(descricao);
         this.id = id;
@@ -78,7 +77,6 @@ public class Projeto {
     }
 
     public void setId(String id) {
-        testaNumero(id);
         this.id = id;
     }
 
