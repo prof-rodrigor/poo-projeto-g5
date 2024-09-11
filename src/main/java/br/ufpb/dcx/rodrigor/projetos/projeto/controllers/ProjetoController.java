@@ -13,7 +13,6 @@ import io.javalin.http.Context;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 
 public class ProjetoController {
 
@@ -27,7 +26,7 @@ public class ProjetoController {
         ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
         ctx.attribute("professores", participanteService.listarProfessores());
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
-        ctx.attribute("empresas", empresaService.listarEmpresasFormulario());
+        ctx.attribute("empresas", empresaService.listarEmpresas());
         ctx.render("/projetos/form_projeto.html");
     }
 
@@ -56,10 +55,11 @@ public class ProjetoController {
 
         String empresaId = ctx.formParam("empresa");
         Empresa empresa = new Empresa();
-        if (empresaId.isEmpty()) {
-
+        if (empresaId.equals("Sem empresa viculada")) {
+            empresa.setNome("Não há empresa vinculada ao projeto");
+            empresa.setId(0L);
         } else {
-            empresa = empresaService.buscarEmpresaPorId(empresaId).get();
+            empresa = empresaService.buscarEmpresaPorId(empresaId);
         }
 
         projeto.setEmpresa(empresa);

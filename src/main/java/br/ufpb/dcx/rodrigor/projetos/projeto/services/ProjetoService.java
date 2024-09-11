@@ -25,6 +25,7 @@ public class ProjetoService extends AbstractService {
     private final MongoCollection<Document> collection;
     private final ParticipanteService participanteService;
     private final EmpresaService empresaService;
+
     private static final Logger logger = LogManager.getLogger();
 
     public ProjetoService(MongoDBConnector mongoDBConnector, ParticipanteService participanteService, EmpresaService empresaService) {
@@ -34,6 +35,7 @@ public class ProjetoService extends AbstractService {
         MongoDatabase database = mongoDBConnector.getDatabase("projetos");
         this.collection = database.getCollection("projetos");
     }
+
 
 
     public List<Projeto> listarProjetos() {
@@ -73,53 +75,35 @@ public class ProjetoService extends AbstractService {
         projeto.setDataEncerramento(doc.getDate("dataEncerramento").toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
 
         ObjectId coordenadorId = doc.getObjectId("coordenador");
-        if (coordenadorId == null) {
+        if(coordenadorId == null) {
             logger.warn("Projeto '{}' não possui coordenador", projeto.getNome());
-        } else {
+        }
+        if (coordenadorId != null) {
             Participante coordenador = participanteService.buscarParticipantePorId(coordenadorId.toString())
                     .orElse(null);
             projeto.setCoordenador(coordenador);
         }
 
         ObjectId empresaId = doc.getObjectId("empresa");
-        if (empresaId == null) {
-            logger.warn("Projeto '{}' não possui empresa", projeto.getNome());
-        } else {
-            Empresa empresa = empresaService.buscarEmpresaPorId(empresaId.toString()).get();
-            projeto.setEmpresa(empresa);
-        }
+        Empresa empresa = empresaService.buscarEmpresaPorId(empresaId.toString());
+        projeto.setEmpresa(empresa);
 
         return projeto;
     }
 
-
     public Document projetoToDocument(Projeto projeto) {
         Document doc = new Document();
-
-        if (projeto.getId() != null && projeto.getId().length() == 24) {
+        if (projeto.getId() != null) {
             doc.put("_id", new ObjectId(projeto.getId()));
         }
-
         doc.put("nome", projeto.getNome());
         doc.put("descricao", projeto.getDescricao());
-
-        String empresaId = String.valueOf(projeto.getEmpresa().getId());
-        if (empresaId != null && empresaId.length() == 24) {
-            doc.put("empresa", new ObjectId(empresaId));
-        } else {
-            throw new IllegalArgumentException("ID da empresa inválido: " + empresaId);
-        }
-
+        doc.put("empresa", new ObjectId(String.valueOf(projeto.getEmpresa().getId())));
         doc.put("dataInicio", java.util.Date.from(projeto.getDataInicio().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
         doc.put("dataEncerramento", java.util.Date.from(projeto.getDataEncerramento().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
 
         if (projeto.getCoordenador() != null) {
-            String coordenadorId = String.valueOf(projeto.getCoordenador().getId());
-            if (coordenadorId.length() == 24) {
-                doc.put("coordenador", new ObjectId(coordenadorId));
-            } else {
-                throw new IllegalArgumentException("ID do coordenador inválido: " + coordenadorId);
-            }
+            doc.put("coordenador", new ObjectId(String.valueOf(projeto.getCoordenador().getId())));
         }
 
         return doc;
