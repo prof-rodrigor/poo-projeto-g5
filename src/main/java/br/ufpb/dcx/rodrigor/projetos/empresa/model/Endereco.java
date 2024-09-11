@@ -1,7 +1,20 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.model;
 
+
 public class Endereco {
-    private String cidade, estado, bairro, rua, numero, complemento;
+    private String id;
+
+    private String cidade;
+
+    private String estado;
+
+    private String bairro;
+
+    private String rua;
+
+    private String numero;
+
+    private String complemento;
 
     public Endereco() {}
 
@@ -66,12 +79,21 @@ public class Endereco {
         this.numero = numero;
     }
 
+
     public String getComplemento() {
         return complemento;
     }
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

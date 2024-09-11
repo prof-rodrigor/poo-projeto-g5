@@ -1,11 +1,9 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.services;
 
+import br.ufpb.dcx.rodrigor.projetos.AbstractService;
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Endereco;
-import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
-import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
-import br.ufpb.dcx.rodrigor.projetos.projeto.model.Projeto;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.LogManager;
@@ -14,65 +12,140 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class EmpresaService {
-    private List<Empresa> empresas = new ArrayList<>();
-    private Long ultimoId = 1L;
-    private Empresa projetoSemEmpresa = new Empresa("Não há empresa vinculada ao projeto"); //Empresa utilizada como parametro para projetos que não possuem empresas vinvuladas;
+public class EmpresaService extends AbstractService {
 
+    private final MongoCollection<Document> collection;
 
-    public EmpresaService() {
-        Endereco e1 = new Endereco("João Pessoa", "Paraíba", "Ipês", "Rua Empresário Clóvis Rolim", "Bloco A, Sala 3001");
-        empresas.add(new Empresa(ultimoId++,
-                "Phoebus Tecnologia",
-                "phoebus.com.br",
-                "@phoebustecnologia",
-                "linkedin.com/phoebustecnologia",
-                "github.com/phoebustech",
-                "(83) 9 1234-5678",
-                e1));
+    private List<Endereco> enderecos = new ArrayList<>();
+    private Long ultimoIdEndereco = 1L;
 
-        Endereco e2 = new Endereco("João Pessoa", "Paraíba", "Jaguaribe", "Av. João da Mata", "200");
-        empresas.add(new Empresa(ultimoId++,
-                "CODATA",
-                "codata.pb.gov.br",
-                "@codatapbgov",
-                "linkedin.com/codatapbgov",
-                "github.com/codatapbgov",
-                "(83) 3208-4450",
-                e2));
+    private Empresa semEmpresa = new Empresa("Não há empresa vinculada ao projeto",
+            "semEmpresa.com",
+            "instagram.com/semEmpresa",
+            "linkedin.com/semEmpresa",
+            "github.com/semEmpresa",
+            "+00 00 00000-0000",
+            null);
+
+    private static final Logger logger = LogManager.getLogger();
+
+    public EmpresaService(MongoDBConnector mongoDBConnector) {
+        super(mongoDBConnector);
+        MongoDatabase database = mongoDBConnector.getDatabase("empresas");
+        this.collection = database.getCollection("empresas");
+
+        Document query = new Document("nome", semEmpresa.getNome());
+        long count = collection.countDocuments(query);
+
+        if (count == 0) {
+            adicionarEmpresa(semEmpresa);
+        }
     }
+    public void adicionarEndereco(Endereco endereco){
+        endereco.setId(String.valueOf(ultimoIdEndereco));
+        enderecos.add(endereco);
+        ultimoIdEndereco++;
+    }
+    public Endereco buscarEnderecoPorId(String id){
+        for (Endereco endereco : enderecos){
+            if (endereco.getId() == id) return endereco;
+        }
+        return null;
+    }
+
 
 
     public List<Empresa> listarEmpresas() {
+        List<Empresa> empresas = new ArrayList<>();
+
+        // Populando a lista de empresas a partir do banco de dados
+        for (Document doc : collection.find()) {
+            empresas.add(documentToEmpresa(doc));
+        }
+
+        // Usando iterador para evitar problemas ao remover durante a iteração
+        Iterator<Empresa> iterator = empresas.iterator();
+
+        while (iterator.hasNext()) {
+            Empresa empresa = iterator.next();
+
+            // Verifica se o nome da empresa é o mesmo que o de "semEmpresa"
+            if (empresa.getNome().equals(semEmpresa.getNome())) {
+                iterator.remove();  // Remove a empresa usando o iterador
+                break;
+            }
+        }
+
+        return empresas;
+    }
+    public List<Empresa> listarEmpresasFormulario() {
+        List<Empresa> empresas = new ArrayList<>();
+        for (Document doc : collection.find()) {
+            empresas.add(documentToEmpresa(doc));
+        }
         return empresas;
     }
 
+    public Optional<Empresa> buscarEmpresaPorId(String id) {
+        Document doc = collection.find(eq("_id", new ObjectId(id))).first();
+        return Optional.ofNullable(doc).map(this::documentToEmpresa);
+    }
+
     public void adicionarEmpresa(Empresa empresa) {
-        empresa.setId(ultimoId++);
-        empresas.add(empresa);
+        Document doc = empresaToDocument(empresa);
+        collection.insertOne(doc);
+        empresa.setId(doc.getObjectId("_id").toString());
     }
 
     public void atualizarEmpresa(Empresa empresaAtualizada) {
-        empresas.replaceAll(empresa -> empresa.getId().equals(empresaAtualizada.getId()) ? empresaAtualizada : empresa);
+        Document doc = empresaToDocument(empresaAtualizada);
+        collection.replaceOne(eq("_id", new ObjectId(empresaAtualizada.getId())), doc);
     }
 
-    public void removerEmpresa(Long id) {empresas.removeIf(empresa -> empresa.getId().equals(id));}
+    public void removerEmpresa(String id) {
+        collection.deleteOne(eq("_id", new ObjectId(id)));
+    }
 
-    public Empresa buscarEmpresaPorId(String id){
-        Empresa empresa = null;
-        Long idSemEmpresa = 0L;
-        if (id.equals(idSemEmpresa.toString())) {
-            empresa = projetoSemEmpresa;
-            empresa.setId(idSemEmpresa);
-        }
-        for (Empresa empresaX : empresas) {
-            if (String.valueOf(empresaX.getId()).equals(id)) empresa = empresaX;
-        }
+    public Empresa documentToEmpresa(Document doc) {
+        Empresa empresa = new Empresa();
+        empresa.setNome(doc.getString("nome"));
+        empresa.setId(doc.getObjectId("_id").toString());
+        empresa.setEndereco(buscarEnderecoPorId(doc.getString("endereco")));
+        empresa.setSite(doc.getString("site"));
+        empresa.setInstagram(doc.getString("instagram"));
+        empresa.setLinkedin(doc.getString("linkedin"));
+        empresa.setGithub(doc.getString("github"));
+        empresa.setTelefone(doc.getString("telefone"));
+
         return empresa;
     }
+
+
+    public Document empresaToDocument(Empresa empresa) {
+        Document doc = new Document();
+
+        if (empresa.getId() != null && empresa.getId().length() == 24) {
+            doc.put("_id", new ObjectId(empresa.getId()));
+        }
+        doc.put("nome", empresa.getNome());
+        if (empresa.getEndereco() == null){
+            doc.put("endereco", String.valueOf(0));
+        } else{
+            doc.put("endereco", empresa.getEndereco().getId());
+        }
+
+        doc.put("site", empresa.getSite());
+        doc.put("instagram", empresa.getInstagram());
+        doc.put("linkedin", empresa.getLinkedin());
+        doc.put("github", empresa.getGithub());
+        doc.put("telefone", empresa.getTelefone());
+
+        return doc;
     }
+}

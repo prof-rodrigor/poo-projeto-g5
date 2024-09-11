@@ -1,24 +1,27 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.controllers;
 
+import br.ufpb.dcx.rodrigor.projetos.Keys;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Endereco;
 import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
 import io.javalin.http.Context;
 
 public class EmpresaController {
-    private static final EmpresaService empresaService = new EmpresaService();
 
     public void listarEmpresas(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
         ctx.attribute("empresas", empresaService.listarEmpresas());
         ctx.render("/empresas/lista_empresas.html");
     }
 
     public void mostrarFormulario(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
         ctx.attribute("empresas", empresaService.listarEmpresas());
         ctx.render("/empresas/form_empresa.html");
     }
 
     public void adicionarEmpresa(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
         try {
             Empresa empresa = new Empresa();
             empresa.setNome(ctx.formParam("nome"));
@@ -36,6 +39,7 @@ public class EmpresaController {
             endereco.setNumero(ctx.formParam("numero"));
             empresa.setEndereco(endereco);
 
+            empresaService.adicionarEndereco(endereco);
             empresaService.adicionarEmpresa(empresa);
             ctx.redirect("/empresas");
         } catch (Exception e) {
@@ -46,7 +50,8 @@ public class EmpresaController {
     }
 
     public void removerEmpresa(Context ctx) {
-        Long id = Long.parseLong(ctx.pathParam("id"));
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        String id = ctx.pathParam("id");
         empresaService.removerEmpresa(id);
         ctx.redirect("/empresas");
     }

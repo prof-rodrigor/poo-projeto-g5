@@ -51,7 +51,7 @@ public class App {
     }
     private void registrarServicos(JavalinConfig config, MongoDBConnector mongoDBConnector) {
         ParticipanteService participanteService = new ParticipanteService(mongoDBConnector);
-        EmpresaService empresaService = new EmpresaService();
+        EmpresaService empresaService = new EmpresaService(mongoDBConnector);
         config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService, empresaService));
         config.appData(Keys.PARTICIPANTE_SERVICE.key(), participanteService);
         config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
@@ -186,7 +186,6 @@ public class App {
         app.get("/empresas/{id}/remover", empresaController::removerEmpresa);
     }
 
-    // Método para verificar se o usuário está autenticado pela or cookie
     private void verificarAutenticacao(Context ctx) {
         logger.info("Verificando autenticação para a rota: {}", ctx.path());
         String autenticado = ctx.cookie("usuario_autenticado");

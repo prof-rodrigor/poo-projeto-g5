@@ -2,17 +2,23 @@ package br.ufpb.dcx.rodrigor.projetos.empresa.model;
 
 public class Empresa {
     private String nome, site, instagram, linkedin, github, telefone;
-    private Long id;
+    private String id;
 
     private Endereco endereco;
 
     public Empresa() {}
 
-    public Empresa(String nome){
+    public Empresa(String nome, String site, String instagram, String linkedin, String github, String telefone, Endereco endereco) {
         this.nome = nome;
+        this.site = site;
+        this.instagram = instagram;
+        this.linkedin = linkedin;
+        this.github = github;
+        this.telefone = telefone;
+        this.endereco = endereco;
     }
 
-    public Empresa(Long id, String nome, String site, String instagram, String linkedin, String github, String telefone, Endereco endereco) {
+    public Empresa(String id, String nome, String site, String instagram, String linkedin, String github, String telefone, Endereco endereco) {
         this.id = id;
         this.nome = nome;
         this.site = site;
@@ -44,11 +50,11 @@ public class Empresa {
         this.nome = nome;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
