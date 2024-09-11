@@ -89,8 +89,11 @@ public class Projeto {
     }
 
     public void setCoordenador(Participante coordenador) {
-        if(!coordenador.getCategoria().equals(CategoriaParticipante.PROFESSOR)) {
-            throw new IllegalArgumentException("O coordenador deve ser um professor: "+coordenador);
+        if (coordenador == null) {
+            throw new IllegalArgumentException("O coordenador não pode ser nulo");
+        }
+        if (!coordenador.getCategoria().equals(CategoriaParticipante.PROFESSOR)) {
+            throw new IllegalArgumentException("O coordenador deve ser um professor: " + coordenador);
         }
         this.coordenador = coordenador;
     }

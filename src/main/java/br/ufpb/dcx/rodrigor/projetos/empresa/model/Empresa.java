@@ -14,6 +14,7 @@ public class Empresa {
         this.instagram = instagram;
         this.linkedin = linkedin;
         this.github = github;
+
         this.telefone = telefone;
         this.endereco = endereco;
     }
@@ -25,22 +26,23 @@ public class Empresa {
         this.instagram = instagram;
         this.linkedin = linkedin;
         this.github = github;
+        testaNumero(telefone);
         this.telefone = telefone;
         this.endereco = endereco;
     }
 
-    /* public void testaEntrada(String x){
+     public void testaEntrada(String x){
         if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
     }
 
     public void testaNumero(String x) {
-        for (int i = 0; i < x.length(); i++) {
-            char c = x.charAt(i);
-            if (!Character.isDigit(c)) {
-                throw new IllegalArgumentException("O número informado contém valores que não são números.");
-            }
+        if (x == null || x.isEmpty()) {
+            throw new IllegalArgumentException("O número de telefone não pode ser nulo ou vazio.");
         }
-    } */
+        if (!x.matches("\\d+")) {  // Verifica se todos os caracteres são números
+            throw new IllegalArgumentException("O número informado contém valores que não são números.");
+        }
+    }
 
     public String getNome() {
         return nome;
@@ -95,6 +97,7 @@ public class Empresa {
     }
 
     public void setTelefone(String telefone) {
+        testaNumero(telefone);
         this.telefone = telefone;
     }
 

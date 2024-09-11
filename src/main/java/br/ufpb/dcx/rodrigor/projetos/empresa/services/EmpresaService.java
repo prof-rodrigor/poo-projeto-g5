@@ -30,7 +30,7 @@ public class EmpresaService extends AbstractService {
             "instagram.com/semEmpresa",
             "linkedin.com/semEmpresa",
             "github.com/semEmpresa",
-            "+00 00 00000-0000",
+            "0000000000000",
             null);
 
     private static final Logger logger = LogManager.getLogger();
