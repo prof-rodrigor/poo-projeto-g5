@@ -31,7 +31,9 @@
                     <td th:text="${empresa.linkedin}">LinkedIn</td>
                     <td th:text="${empresa.github}">GitHub</td>
                     <td th:text="${empresa.telefone}">Telefone</td>
-                    <td th:text="${empresa.endereco}">Endereço</td>
+                    <td th:if="${empresa.endereco}" th:text="${empresa.endereco.cidade + ', ' + empresa.endereco.bairro + ', ' + empresa.endereco.estado + ' - ' + empresa.endereco.rua + ' - ' + empresa.endereco.numero}">Endereço</td>
+                    <td th:if="${not empresa.endereco}" th:text="'Endereço não disponível'">Endereço</td>
+
                     <td>
                         <button class="btn btn-danger btn-sm" th:data-id="${empresa.id}" onclick="removerEmpresa(this)">
                             Remover

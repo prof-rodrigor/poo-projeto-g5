@@ -37,9 +37,8 @@ public class EmpresaController {
             endereco.setBairro(ctx.formParam("bairro"));
             endereco.setRua(ctx.formParam("rua"));
             endereco.setNumero(ctx.formParam("numero"));
-            empresa.setEndereco(endereco);
-
-            empresaService.adicionarEndereco(endereco);
+//            empresaService.adicionarEndereco(endereco);
+            empresa.setEndereco(empresaService.adicionarEndereco(endereco));
             empresaService.adicionarEmpresa(empresa);
             ctx.redirect("/empresas");
         } catch (Exception e) {

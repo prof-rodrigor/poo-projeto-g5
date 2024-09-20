@@ -83,10 +83,14 @@ public class ProjetoService extends AbstractService {
                     .orElse(null);
             projeto.setCoordenador(coordenador);
         }
-
         ObjectId empresaId = doc.getObjectId("empresa");
-        Empresa empresa = empresaService.buscarEmpresaPorId(empresaId.toString());
-        projeto.setEmpresa(empresa);
+        if (empresaId == null){
+            logger.warn("Projeto '{}' não possui empresa", projeto.getNome() );
+        }
+        else{
+            Empresa empresa = empresaService.buscarEmpresaPorId(empresaId.toString()).get();
+            projeto.setEmpresa(empresa);
+        }
 
         return projeto;
     }

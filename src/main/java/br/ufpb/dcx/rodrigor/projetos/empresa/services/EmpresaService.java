@@ -47,18 +47,31 @@ public class EmpresaService extends AbstractService {
             adicionarEmpresa(semEmpresa);
         }
     }
-    public void adicionarEndereco(Endereco endereco){
-        endereco.setId(String.valueOf(ultimoIdEndereco));
+//    public void adicionarEndereco(Endereco endereco){
+//        endereco.setId(String.valueOf(ultimoIdEndereco++));
+//        enderecos.add(endereco);
+//    }
+    public Endereco adicionarEndereco(Endereco endereco){
+        endereco.setId(String.valueOf(ultimoIdEndereco++));
         enderecos.add(endereco);
-        ultimoIdEndereco++;
+        return endereco;
     }
     public Endereco buscarEnderecoPorId(String id){
         for (Endereco endereco : enderecos){
-            if (endereco.getId() == id) return endereco;
+            if (endereco.getId().equals(id)) return endereco;
         }
         return null;
     }
 
+    public List<Endereco> getEnderecos() {
+        return enderecos;
+    }
+
+    public void getEndereco(){
+        for (Endereco endereco: enderecos){
+
+        }
+    }
 
 
     public List<Empresa> listarEmpresas() {
