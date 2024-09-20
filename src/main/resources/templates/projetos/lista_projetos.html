@@ -44,7 +44,9 @@
     <script>
         function removerProjeto(button) {
             const id = button.getAttribute('data-id');
-            window.location.href = `/projetos/${id}/remover`;
+            if (confirm('Tem certeza que deseja remover esse projeto?')) {
+                window.location.href = `/projetos/${id}/remover`;
+            }
         }
     </script>
 </section>

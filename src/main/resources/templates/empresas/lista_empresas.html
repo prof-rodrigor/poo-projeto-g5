@@ -46,7 +46,9 @@
         <script>
             function removerEmpresa(button) {
                 const id = button.getAttribute('data-id');
+                if (confirm('Tem certeza que deseja remover essa empresa?')) {
                 window.location.href = `/empresas/${id}/remover`;
+            }
             }
         </script>
     </section>

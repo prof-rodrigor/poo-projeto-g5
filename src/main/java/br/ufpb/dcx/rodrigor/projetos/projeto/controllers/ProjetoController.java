@@ -26,7 +26,7 @@ public class ProjetoController {
         ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
         ctx.attribute("professores", participanteService.listarProfessores());
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
-        ctx.attribute("empresas", empresaService.listarEmpresas());
+        ctx.attribute("empresas", empresaService.listarEmpresasFormulario());
         ctx.render("/projetos/form_projeto.html");
     }
 
