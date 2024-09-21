@@ -35,35 +35,37 @@ public class ProjetoController {
         ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
 
-        Projeto projeto = new Projeto();
-        projeto.setNome(ctx.formParam("nome"));
-        projeto.setDescricao(ctx.formParam("descricao"));
-        if (Objects.equals(ctx.formParam("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);
-        if (Objects.equals(ctx.formParam("categoria"), "Pesquisa")) projeto.setCategoria(Categoria.PP);
-        if (Objects.equals(ctx.formParam("categoria"), "Integração com Empresa")) projeto.setCategoria(Categoria.PIE);
-        if (Objects.equals(ctx.formParam("categoria"), "Outro"))  projeto.setCategoria(Categoria.Other);
-        projeto.setDataInicio(LocalDate.parse(ctx.formParam("dataInicio")));
-        projeto.setDataEncerramento(LocalDate.parse(ctx.formParam("dataEncerramento")));
+        if ((!ctx.formParam("nome").isEmpty()) || (!ctx.formParam("descricao").isEmpty())) {
+            Projeto projeto = new Projeto();
+            projeto.setNome(ctx.formParam("nome"));
+            projeto.setDescricao(ctx.formParam("descricao"));
+            if (Objects.equals(ctx.formParam("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);
+            if (Objects.equals(ctx.formParam("categoria"), "Pesquisa")) projeto.setCategoria(Categoria.PP);
+            if (Objects.equals(ctx.formParam("categoria"), "Integração com Empresa")) projeto.setCategoria(Categoria.PIE);
+            if (Objects.equals(ctx.formParam("categoria"), "Outro"))  projeto.setCategoria(Categoria.Other);
+            projeto.setDataInicio(LocalDate.parse(ctx.formParam("dataInicio")));
+            projeto.setDataEncerramento(LocalDate.parse(ctx.formParam("dataEncerramento")));
 
-        String coordenadorId = ctx.formParam("coordenador");
-        Participante coordenador = participanteService.buscarParticipantePorId(coordenadorId)
-                .orElseThrow(() -> new IllegalArgumentException("Coordenador não encontrado"));
+            String coordenadorId = ctx.formParam("coordenador");
+            Participante coordenador = participanteService.buscarParticipantePorId(coordenadorId)
+                    .orElseThrow(() -> new IllegalArgumentException("Coordenador não encontrado"));
 
-        if (coordenador.getCategoria() != CategoriaParticipante.PROFESSOR) {
-            throw new IllegalArgumentException("Somente professores podem ser coordenadores.");
+            if (coordenador.getCategoria() != CategoriaParticipante.PROFESSOR) {
+                throw new IllegalArgumentException("Somente professores podem ser coordenadores.");
+            }
+
+            String empresaId = ctx.formParam("empresa");
+            Empresa empresa = new Empresa();
+            if (empresaId.isEmpty()){
+
+            } else {
+                empresa = empresaService.buscarEmpresaPorId(empresaId).get();
+            }
+
+            projeto.setEmpresa(empresa);
+            projeto.setCoordenador(coordenador);
+            projetoService.adicionarProjeto(projeto);
         }
-
-        String empresaId = ctx.formParam("empresa");
-        Empresa empresa = new Empresa();
-        if (empresaId.isEmpty()){
-
-        } else {
-            empresa = empresaService.buscarEmpresaPorId(empresaId).get();
-        }
-
-        projeto.setEmpresa(empresa);
-        projeto.setCoordenador(coordenador);
-        projetoService.adicionarProjeto(projeto);
         ctx.redirect("/projetos");
     }
 

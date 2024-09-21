@@ -192,10 +192,10 @@ public class App {
 
         if (autenticado == null || !autenticado.equals("true")) {
             logger.warn("Acesso negado. Usuário não autenticado tentando acessar: {}", ctx.path());
-            ctx.redirect("/login");
-            ctx.result("Acesso negado. Faça login primeiro.");
+            ctx.redirect("/login?erro=2");
         }
     }
+
 
 
 

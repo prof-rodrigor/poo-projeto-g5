@@ -23,23 +23,25 @@ public class EmpresaController {
     public void adicionarEmpresa(Context ctx) {
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
         try {
-            Empresa empresa = new Empresa();
-            empresa.setNome(ctx.formParam("nome"));
-            empresa.setSite(ctx.formParam("site"));
-            empresa.setInstagram(ctx.formParam("instagram"));
-            empresa.setLinkedin(ctx.formParam("linkedin"));
-            empresa.setGithub(ctx.formParam("github"));
-            empresa.setTelefone(ctx.formParam("telefone"));
+            if ((!ctx.formParam("nome").isEmpty()) || (!ctx.formParam("cidade").isEmpty())) {
+                Empresa empresa = new Empresa();
+                empresa.setNome(ctx.formParam("nome"));
+                empresa.setSite(ctx.formParam("site"));
+                empresa.setInstagram(ctx.formParam("instagram"));
+                empresa.setLinkedin(ctx.formParam("linkedin"));
+                empresa.setGithub(ctx.formParam("github"));
+                empresa.setTelefone(ctx.formParam("telefone"));
 
-            Endereco endereco = new Endereco();
-            endereco.setCidade(ctx.formParam("cidade"));
-            endereco.setEstado(ctx.formParam("estado"));
-            endereco.setBairro(ctx.formParam("bairro"));
-            endereco.setRua(ctx.formParam("rua"));
-            endereco.setNumero(ctx.formParam("numero"));
+                Endereco endereco = new Endereco();
+                endereco.setCidade(ctx.formParam("cidade"));
+                endereco.setEstado(ctx.formParam("estado"));
+                endereco.setBairro(ctx.formParam("bairro"));
+                endereco.setRua(ctx.formParam("rua"));
+                endereco.setNumero(ctx.formParam("numero"));
 //            empresaService.adicionarEndereco(endereco);
-            empresa.setEndereco(empresaService.adicionarEndereco(endereco));
-            empresaService.adicionarEmpresa(empresa);
+                empresa.setEndereco(empresaService.adicionarEndereco(endereco));
+                empresaService.adicionarEmpresa(empresa);
+            }
             ctx.redirect("/empresas");
         } catch (Exception e) {
             ctx.status(500);

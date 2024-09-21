@@ -30,7 +30,7 @@ public class LoginController {
             ctx.redirect("/area-interna");
         } else {
             logger.warn("Tentativa de login falhou para o usuário: {}", login);
-            ctx.redirect("/login");
+            ctx.redirect("/login?erro=1");
         }
     }
     public void logout(Context ctx) {

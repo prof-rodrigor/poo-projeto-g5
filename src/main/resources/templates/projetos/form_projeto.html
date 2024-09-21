@@ -9,11 +9,13 @@
     <form action="/projetos" method="post">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="nome" name="nome" required>
+            <input type="text" minlength="5" maxlength="40" class="form-control" id="nome" name="nome" placeholder="5-40 caracteres" required>
+            <small id="contadorNome" class="form-text text-muted">40 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+            <textarea class="form-control" id="descricao" name="descricao" placeholder="5-200 caracteres" rows="3" minlength="5" maxlength="200" required></textarea>
+            <small id="contadorDescricao" class="form-text text-muted">200 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="coordenador" class="form-label">Coordenador</label>
@@ -45,6 +47,26 @@
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a href="/projetos" class="btn btn-secondary">Cancelar</a>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function atualizarContador(campo, contadorId) {
+                const maxLength = campo.getAttribute('maxlength');
+                const currentLength = campo.value.length;
+                const contador = document.getElementById(contadorId);
+                contador.textContent = `${maxLength - currentLength} caracteres restantes`;
+            }
+
+            const inputNome = document.getElementById('nome');
+            inputNome.addEventListener('input', function() {
+                atualizarContador(inputNome, 'contadorNome');
+            });
+
+            const textareaDescricao = document.getElementById('descricao');
+            textareaDescricao.addEventListener('input', function() {
+                atualizarContador(textareaDescricao, 'contadorDescricao');
+            });
+        });
+    </script>
 </section>
 </body>
 </html>

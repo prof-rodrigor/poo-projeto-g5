@@ -9,32 +9,39 @@
     <form action="/empresas" method="post">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="nome" name="nome" required>
+            <input type="text" minlength="5" maxlength="100" class="form-control" id="nome" name="nome" placeholder="5-100 caracteres" required>
+            <small id="contadorNome" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="site" class="form-label">Site</label>
-            <textarea class="form-control" id="site" name="site" rows="1"></textarea>
+            <textarea class="form-control" id="site" name="site" placeholder="5-255 caracteres" rows="1" minlength="5" maxlength="255"></textarea>
+            <small id="contadorSite" class="form-text text-muted">255 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="instagram" class="form-label">Instagram</label>
-            <textarea class="form-control" id="instagram" name="instagram" rows="1"></textarea>
+            <textarea class="form-control" id="instagram" name="instagram" placeholder="5-30 caracteres" rows="1" minlength="5" maxlength="30"></textarea>
+            <small id="contadorInstagram" class="form-text text-muted">30 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="linkedin" class="form-label">Linkedin</label>
-            <textarea class="form-control" id="linkedin" name="linkedin" rows="1"></textarea>
+            <textarea class="form-control" id="linkedin" name="linkedin" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"></textarea>
+            <small id="contadorLinkedin" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="github" class="form-label">Github</label>
-            <textarea class="form-control" id="github" name="github" rows="1"></textarea>
+            <textarea class="form-control" id="github" name="github" placeholder="5-40 caracteres" rows="1" minlength="5" maxlength="40"></textarea>
+            <small id="contadorGithub" class="form-text text-muted">40 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="telefone" name="telefone" pattern="[0-9]+" title="Por favor, insira apenas números" required>
+            <input type="text" minlength="8" maxlength="11" class="form-control" id="telefone" name="telefone" placeholder="8-11 numeros" pattern="[0-9]+" title="Por favor, insira apenas números" required>
+            <small id="contadorTelefone" class="form-text text-muted">11 caracteres restantes</small>
         </div>
         <h2 class="mt-5">Endereço</h2>
         <div class="mb-3">
             <label for="cidade" class="form-label">Cidade</label>
-            <textarea class="form-control" id="cidade" name="cidade" rows="1" required></textarea>
+            <textarea class="form-control" id="cidade" name="cidade" placeholder="5-50 caracteres" rows="1" minlength="5" maxlength="50" required></textarea>
+            <small id="contadorCidade" class="form-text text-muted">50 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="estado" class="form-label">Estado</label>
@@ -71,23 +78,48 @@
         </div>
         <div class="mb-3">
             <label for="bairro" class="form-label">Bairro</label>
-            <textarea class="form-control" id="bairro" name="bairro" rows="1" required></textarea>
+            <textarea class="form-control" id="bairro" name="bairro" placeholder="5-50 caracteres" rows="1" minlength="5" maxlength="50" required></textarea>
+            <small id="contadorBairro" class="form-text text-muted">50 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="rua" class="form-label">Rua</label>
-            <textarea class="form-control" id="rua" name="rua" rows="1" required></textarea>
+            <textarea class="form-control" id="rua" name="rua" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100" required></textarea>
+            <small id="contadorRua" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="numero" class="form-label">Número</label>
-            <textarea class="form-control" id="numero" name="numero" rows="1" required></textarea>
+            <textarea class="form-control" id="numero" name="numero" placeholder="5-10 caracteres" rows="1" minlength="5" maxlength="10" required></textarea>
+            <small id="contadorNumero" class="form-text text-muted">10 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="complemento" class="form-label">Complemento</label>
-            <textarea class="form-control" id="complemento" name="complemento" rows="1"></textarea>
+            <textarea class="form-control" id="complemento" name="complemento" placeholder="5-50 caracteres" rows="1" minlength="5" maxlength="50"></textarea>
+            <small id="contadorComplemento" class="form-text text-muted">50 caracteres restantes</small>
         </div>
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a href="/empresas" class="btn btn-secondary">Cancelar</a>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function atualizarContador(campo) {
+                const maxLength = campo.getAttribute('maxlength');
+                const currentLength = campo.value.length;
+                const contador = document.getElementById(`contador${campo.id.charAt(0).toUpperCase() + campo.id.slice(1)}`);
+                if (contador) {
+                    contador.textContent = `${maxLength - currentLength} caracteres restantes`;
+                }
+            }
+            const camposComContador = document.querySelectorAll('input[maxlength], textarea[maxlength]');
+
+            // Adicionar evento de input para todos os campos selecionados
+            camposComContador.forEach(campo => {
+                campo.addEventListener('input', function() {
+                    atualizarContador(campo);
+                });
+            });
+        });
+    </script>
+
 </section>
 </body>
 </html>
