@@ -26,10 +26,22 @@
             <th:block th:each="empresa : ${empresas}">
                 <tr>
                     <td th:text="${empresa.nome}">Nome</td>
-                    <td th:text="${empresa.site}">Site</td>
-                    <td th:text="${empresa.instagram}">Instagram</td>
-                    <td th:text="${empresa.linkedin}">LinkedIn</td>
-                    <td th:text="${empresa.github}">GitHub</td>
+                    <td>
+                        <span th:if="${empresa.site != ''}" th:text="${empresa.site}">Site</span>
+                        <span th:if="${empresa.site == ''}" style="font-weight: bold;">Não informado</span>
+                    </td>
+                    <td>
+                        <span th:if="${empresa.instagram != ''}" th:text="${empresa.instagram}">Instagram</span>
+                        <span th:if="${empresa.instagram == ''}" style="font-weight: bold;">Não informado</span>
+                    </td>
+                    <td>
+                        <span th:if="${empresa.linkedin != ''}" th:text="${empresa.linkedin}">Linkedin</span>
+                        <span th:if="${empresa.linkedin == ''}" style="font-weight: bold;">Não informado</span>
+                    </td>
+                    <td>
+                        <span th:if="${empresa.github != ''}" th:text="${empresa.github}">Github</span>
+                        <span th:if="${empresa.github == ''}" style="font-weight: bold;">Não informado</span>
+                    </td>
                     <td th:text="${empresa.telefone}">Telefone</td>
                     <td th:if="${empresa.endereco}" th:text="${empresa.endereco.cidade + ', ' + empresa.endereco.bairro + ', ' + empresa.endereco.estado + ' - ' + empresa.endereco.rua + ' - ' + empresa.endereco.numero}">Endereço</td>
                     <td th:if="${not empresa.endereco}" th:text="'Endereço não disponível'">Endereço</td>

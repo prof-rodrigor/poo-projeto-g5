@@ -26,19 +26,6 @@ public class Endereco {
         this.numero = numero;
     }
 
-    /* public void testaEntrada(String x){
-        if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
-    }
-
-    public void testaNumero(String x) {
-        for (int i = 0; i < x.length(); i++) {
-            char c = x.charAt(i);
-            if (!Character.isDigit(c)) {
-                throw new IllegalArgumentException("O número informado contém valores que não são números.");
-            }
-        }
-    } */
-
     public String getCidade() {
         return cidade;
     }
