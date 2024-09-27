@@ -4,6 +4,7 @@ import br.ufpb.dcx.rodrigor.projetos.Keys;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Endereco;
 import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
 import io.javalin.http.Context;
 
 public class EmpresaController {
@@ -22,6 +23,7 @@ public class EmpresaController {
 
     public void adicionarEmpresa(Context ctx) {
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        EnderecoService enderecoService = ctx.appData(Keys.ENDERECO_SERVICE.key());
         try {
             if ((!ctx.formParam("nome").isEmpty()) || (!ctx.formParam("cidade").isEmpty())) {
                 Empresa empresa = new Empresa();
@@ -39,7 +41,7 @@ public class EmpresaController {
                 endereco.setRua(ctx.formParam("rua"));
                 endereco.setNumero(ctx.formParam("numero"));
 //            empresaService.adicionarEndereco(endereco);
-                empresa.setEndereco(empresaService.adicionarEndereco(endereco));
+                empresa.setEndereco(enderecoService.buscarEnderecoPorId(enderecoService.adicionarEndereco(endereco)).get());
                 empresaService.adicionarEmpresa(empresa);
             }
             ctx.redirect("/empresas");

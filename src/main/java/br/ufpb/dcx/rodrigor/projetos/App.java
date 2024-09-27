@@ -3,6 +3,7 @@ package br.ufpb.dcx.rodrigor.projetos;
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
 import br.ufpb.dcx.rodrigor.projetos.empresa.controllers.EmpresaController;
 import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
 import br.ufpb.dcx.rodrigor.projetos.login.LoginController;
 import br.ufpb.dcx.rodrigor.projetos.participante.controllers.ParticipanteController;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
@@ -52,9 +53,11 @@ public class App {
     private void registrarServicos(JavalinConfig config, MongoDBConnector mongoDBConnector) {
         ParticipanteService participanteService = new ParticipanteService(mongoDBConnector);
         EmpresaService empresaService = new EmpresaService(mongoDBConnector);
+        EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
         config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService, empresaService));
         config.appData(Keys.PARTICIPANTE_SERVICE.key(), participanteService);
         config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
+        config.appData(Keys.ENDERECO_SERVICE.key(), enderecoService);
     }
     private void configurarPaginasDeErro(Javalin app) {
         app.error(404, ctx -> ctx.render("erro_404.html"));

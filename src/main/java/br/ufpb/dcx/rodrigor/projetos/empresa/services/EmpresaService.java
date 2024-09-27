@@ -126,10 +126,15 @@ public class EmpresaService extends AbstractService {
     }
 
     public Empresa documentToEmpresa(Document doc) {
+        EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
         Empresa empresa = new Empresa();
         empresa.setNome(doc.getString("nome"));
         empresa.setId(doc.getObjectId("_id").toString());
-        empresa.setEndereco(buscarEnderecoPorId(doc.getString("endereco")));
+        if ((doc.getObjectId("endereco").toHexString()).equals("5e6d8a3b9d7f6c1a8e9b5d4e")){
+            empresa.setEndereco(null);
+        } else{
+            empresa.setEndereco(enderecoService.buscarEnderecoPorId(doc.getObjectId("endereco").toHexString()).get());
+        }
         empresa.setSite(doc.getString("site"));
         empresa.setInstagram(doc.getString("instagram"));
         empresa.setLinkedin(doc.getString("linkedin"));
@@ -148,9 +153,9 @@ public class EmpresaService extends AbstractService {
         }
         doc.put("nome", empresa.getNome());
         if (empresa.getEndereco() == null){
-            doc.put("endereco", String.valueOf(0));
+            doc.put("endereco", new ObjectId("5e6d8a3b9d7f6c1a8e9b5d4e"));
         } else{
-            doc.put("endereco", empresa.getEndereco().getId());
+            doc.put("endereco", new ObjectId(empresa.getEndereco().getId()));
         }
 
         doc.put("site", empresa.getSite());

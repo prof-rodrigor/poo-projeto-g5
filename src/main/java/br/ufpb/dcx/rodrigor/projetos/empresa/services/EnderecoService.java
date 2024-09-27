@@ -4,6 +4,8 @@ import br.ufpb.dcx.rodrigor.projetos.AbstractService;
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
 import br.ufpb.dcx.rodrigor.projetos.empresa.model.Endereco;
+import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
+import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.LogManager;
@@ -22,9 +24,6 @@ public class EnderecoService extends AbstractService {
 
     private final MongoCollection<Document> collection;
 
-    private List<Endereco> enderecos = new ArrayList<>();
-
-    private static final Logger logger = LogManager.getLogger();
 
     public EnderecoService(MongoDBConnector mongoDBConnector) {
         super(mongoDBConnector);
@@ -36,36 +35,24 @@ public class EnderecoService extends AbstractService {
 //        enderecos.add(endereco);
 //    }
 
-
     public List<Endereco> listarEnderecos() {
         List<Endereco> enderecos = new ArrayList<>();
-
-        // Populando a lista de empresas a partir do banco de dados
-        for (Document doc : collection.find()) {
-            enderecos.add(documentToEndereco(doc));
-        }
-
-        // Usando iterador para evitar problemas ao remover durante a iteração
-        Iterator<Endereco> iterator = enderecos.iterator();
-
-        while (iterator.hasNext()) {
-            Endereco endereco = iterator.next();
-        }
-
-        return enderecos;
-    }
-    public List<Endereco> listarEnderecosFormulario() {
-        List<Empresa> empresas = new ArrayList<>();
         for (Document doc : collection.find()) {
             enderecos.add(documentToEndereco(doc));
         }
         return enderecos;
     }
+    public Optional<Endereco> buscarEnderecoPorId(String id) {
+        Document doc = collection.find(eq("_id", new ObjectId(id))).first();
+        return Optional.ofNullable(doc).map(EnderecoService::documentToEndereco);
+    }
 
-    public void adicionarEndereco(Endereco endereco) {
+    public String adicionarEndereco(Endereco endereco) {
         Document doc = enderecoToDocument(endereco);
         collection.insertOne(doc);
-        endereco.setId(doc.getObjectId("_id").toString());
+        String id = doc.getObjectId("_id").toString();
+        endereco.setId(id);
+        return id;
     }
 
     public void atualizarEndereco(Endereco enderecoAtualizado) {
@@ -73,11 +60,7 @@ public class EnderecoService extends AbstractService {
         collection.replaceOne(eq("_id", new ObjectId(enderecoAtualizado.getId())), doc);
     }
 
-    public void removerEmpresa(String id) {
-        collection.deleteOne(eq("_id", new ObjectId(id)));
-    }
-
-    public Endereco documentToEndereco(Document doc) {
+    public static Endereco documentToEndereco(Document doc) {
         Endereco endereco = new Endereco();
         endereco.setNumero(doc.getString("numero"));
         endereco.setBairro(doc.getString("bairro"));
@@ -85,7 +68,7 @@ public class EnderecoService extends AbstractService {
         endereco.setEstado(doc.getString("estado"));
         endereco.setComplemento(doc.getString("complemento"));
         endereco.setRua(doc.getString("rua"));
-        endereco.setId(doc.getString("id"));
+        endereco.setId(doc.getObjectId("_id").toHexString());
 
         return endereco;
     }
