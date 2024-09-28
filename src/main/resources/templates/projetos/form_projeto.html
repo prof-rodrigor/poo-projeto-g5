@@ -66,6 +66,25 @@
                 atualizarContador(textareaDescricao, 'contadorDescricao');
             });
         });
+
+        function validarDatas() {
+            const dataInicio = document.getElementById('dataInicio');
+            const dataEncerramento = document.getElementById('dataEncerramento');
+
+            const dataInicioValor = new Date(dataInicio.value);
+            const dataEncerramentoValor = new Date(dataEncerramento.value);
+
+            if (dataEncerramentoValor < dataInicioValor) {
+                dataEncerramento.setCustomValidity('A data de início deve ser maior que a data de encerramento.');
+            } else {
+                dataEncerramento.setCustomValidity('');
+            }
+        }
+
+            window.onload = function() {
+                document.getElementById('dataEncerramento').addEventListener('input', validarDatas);
+                document.getElementById('dataInicio').addEventListener('input', validarDatas);
+            };
     </script>
 </section>
 </body>
