@@ -13,6 +13,7 @@ import io.javalin.http.Context;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ProjetoController {
 
@@ -54,15 +55,15 @@ public class ProjetoController {
         }
 
         String empresaId = ctx.formParam("empresa");
-        Empresa empresa = new Empresa();
+        Optional<Empresa> empresa = Optional.of(new Empresa());
         if (empresaId.equals("Sem empresa viculada")) {
-            empresa.setNome("Não há empresa vinculada ao projeto");
-            empresa.setId(0L);
+            empresa.get().setNome("Não há empresa vinculada ao projeto");
+            empresa.get().setId("0L");
         } else {
             empresa = empresaService.buscarEmpresaPorId(empresaId);
         }
 
-        projeto.setEmpresa(empresa);
+        projeto.setEmpresa(empresa.orElse(null));
         projeto.setCoordenador(coordenador);
         projetoService.adicionarProjeto(projeto);
         ctx.redirect("/projetos");

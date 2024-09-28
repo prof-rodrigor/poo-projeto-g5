@@ -85,8 +85,8 @@ public class ProjetoService extends AbstractService {
         }
 
         ObjectId empresaId = doc.getObjectId("empresa");
-        Empresa empresa = empresaService.buscarEmpresaPorId(empresaId.toString());
-        projeto.setEmpresa(empresa);
+        Optional<Empresa> empresa = empresaService.buscarEmpresaPorId(empresaId.toString());
+        projeto.setEmpresa(empresa.orElse(null));
 
         return projeto;
     }

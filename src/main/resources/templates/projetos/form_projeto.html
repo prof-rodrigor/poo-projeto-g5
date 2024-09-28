@@ -45,6 +45,26 @@
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a href="/projetos" class="btn btn-secondary">Cancelar</a>
     </form>
+    <script>
+        function validarDatas() {
+            const dataInicio = document.getElementById('dataInicio');
+            const dataEncerramento = document.getElementById('dataEncerramento');
+
+            const dataInicioValor = new Date(dataInicio.value);
+            const dataEncerramentoValor = new Date(dataEncerramento.value);
+
+            if (dataEncerramentoValor < dataInicioValor) {
+                dataEncerramento.setCustomValidity('A data de encerramento não pode ser menor que a data de início.');
+            } else {
+                dataEncerramento.setCustomValidity('');
+            }
+        }
+
+        window.onload = function() {
+            document.getElementById('dataEncerramento').addEventListener('input', validarDatas);
+            document.getElementById('dataInicio').addEventListener('input', validarDatas);
+        };
+    </script>
 </section>
 </body>
 </html>
