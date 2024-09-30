@@ -12,6 +12,7 @@
         <thead>
         <tr>
             <th>Nome</th>
+            <th>Categoria</th>
             <th>Descrição</th>
             <th>Coordenador</th>
             <th>Empresa vinculada</th>
@@ -24,6 +25,7 @@
         <th:block th:each="projeto : ${projetos}">
             <tr>
                 <td th:text="${projeto.nome}">Nome do Projeto</td>
+                <td th:text="${projeto.categoria.descricao}">Categoria do Projeto</td>
                 <td th:text="${projeto.descricao}">Descrição do Projeto</td>
                 <td>
                     <span th:if="${projeto.coordenador != null}" th:text="${projeto.coordenador.nome}"></span>
