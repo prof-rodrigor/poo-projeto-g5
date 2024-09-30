@@ -25,6 +25,8 @@ public class EmpresaService extends AbstractService {
     private List<Endereco> enderecos = new ArrayList<>();
     private Long ultimoIdEndereco = 1L;
 
+    private EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
+
     private Empresa semEmpresa = new Empresa("Não há empresa vinculada ao projeto",
             "semEmpresa.com",
             "instagram.com/semEmpresa",
@@ -122,6 +124,9 @@ public class EmpresaService extends AbstractService {
     }
 
     public void removerEmpresa(String id) {
+        Document doc = collection.find(eq("_id", new ObjectId(id))).first();
+        String idEndereco = doc.getObjectId("endereco").toHexString();
+        enderecoService.removerEndereco(idEndereco);
         collection.deleteOne(eq("_id", new ObjectId(id)));
     }
 
