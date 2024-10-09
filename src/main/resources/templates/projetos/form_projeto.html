@@ -9,11 +9,13 @@
     <form action="/projetos" method="post">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="nome" name="nome" required>
+            <input type="text" minlength="5" maxlength="50" class="form-control" id="nome" name="nome" placeholder="5-50 caracteres" required>
+            <small id="contadorNome" class="form-text text-muted">40 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+            <textarea class="form-control" id="descricao" name="descricao" placeholder="5-200 caracteres" rows="3" minlength="5" maxlength="200" required></textarea>
+            <small id="contadorDescricao" class="form-text text-muted">200 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="coordenador" class="form-label">Coordenador</label>
@@ -22,6 +24,24 @@
                 <th:block th:each="professor : ${professores}">
                     <option th:value="${professor.id}" th:text="${professor.nome}"></option>
                 </th:block>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="empresa" class="form-label">Empresa</label>
+            <select class="form-select" id="empresa" name="empresa" required>
+                <option value="">Selecione a empresa vinculada ao projeto</option>
+                <th:block th:each="empresa : ${empresas}">
+                    <option th:value="${empresa.id}" th:text="${empresa.nome}"></option>
+                </th:block>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria</label>
+            <select class="form-control" id="categoria" name="categoria" rows="3" required>
+                <option value="Extensão">Extensão</option>
+                <option value="Pesquisa">Pesquisa</option>
+                <option value="Integração">Integração com empresa</option>
+                <option value="Outro">Outro</option>
             </select>
         </div>
         <div class="mb-3">
@@ -36,6 +56,45 @@
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a href="/projetos" class="btn btn-secondary">Cancelar</a>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function atualizarContador(campo, contadorId) {
+                const maxLength = campo.getAttribute('maxlength');
+                const currentLength = campo.value.length;
+                const contador = document.getElementById(contadorId);
+                contador.textContent = `${maxLength - currentLength} caracteres restantes`;
+            }
+
+            const inputNome = document.getElementById('nome');
+            inputNome.addEventListener('input', function() {
+                atualizarContador(inputNome, 'contadorNome');
+            });
+
+            const textareaDescricao = document.getElementById('descricao');
+            textareaDescricao.addEventListener('input', function() {
+                atualizarContador(textareaDescricao, 'contadorDescricao');
+            });
+        });
+
+        function validarDatas() {
+            const dataInicio = document.getElementById('dataInicio');
+            const dataEncerramento = document.getElementById('dataEncerramento');
+
+            const dataInicioValor = new Date(dataInicio.value);
+            const dataEncerramentoValor = new Date(dataEncerramento.value);
+
+            if (dataEncerramentoValor < dataInicioValor) {
+                dataEncerramento.setCustomValidity('A data de início deve ser maior que a data de encerramento.');
+            } else {
+                dataEncerramento.setCustomValidity('');
+            }
+        }
+
+            window.onload = function() {
+                document.getElementById('dataEncerramento').addEventListener('input', validarDatas);
+                document.getElementById('dataInicio').addEventListener('input', validarDatas);
+            };
+    </script>
 </section>
 </body>
 </html>

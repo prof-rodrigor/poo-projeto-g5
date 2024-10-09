@@ -1,6 +1,9 @@
 package br.ufpb.dcx.rodrigor.projetos;
 
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
+import br.ufpb.dcx.rodrigor.projetos.empresa.controllers.EmpresaController;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
 import br.ufpb.dcx.rodrigor.projetos.login.LoginController;
 import br.ufpb.dcx.rodrigor.projetos.participante.controllers.ParticipanteController;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
@@ -8,6 +11,7 @@ import br.ufpb.dcx.rodrigor.projetos.projeto.controllers.ProjetoController;
 import br.ufpb.dcx.rodrigor.projetos.projeto.services.ProjetoService;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
+import io.javalin.http.Context;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.function.Consumer;
+
 
 public class App {
     private static final Logger logger = LogManager.getLogger();
@@ -47,8 +52,12 @@ public class App {
     }
     private void registrarServicos(JavalinConfig config, MongoDBConnector mongoDBConnector) {
         ParticipanteService participanteService = new ParticipanteService(mongoDBConnector);
-        config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService));
+        EmpresaService empresaService = new EmpresaService(mongoDBConnector);
+        EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
+        config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService, empresaService));
         config.appData(Keys.PARTICIPANTE_SERVICE.key(), participanteService);
+        config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
+        config.appData(Keys.ENDERECO_SERVICE.key(), enderecoService);
     }
     private void configurarPaginasDeErro(Javalin app) {
         app.error(404, ctx -> ctx.render("erro_404.html"));
@@ -62,7 +71,11 @@ public class App {
 
         Consumer<JavalinConfig> configConsumer = this::configureJavalin;
 
-        return Javalin.create(configConsumer).start(porta);
+        // Adicionando configuração de arquivos estáticos
+        return Javalin.create(config -> {
+            config.staticFiles.add("/public");
+            configureJavalin(config); // Manter as outras configurações
+        }).start(porta);
     }
 
     private void configureJavalin(JavalinConfig config) {
@@ -139,18 +152,23 @@ public class App {
 
     private void configurarRotas(Javalin app) {
         LoginController loginController = new LoginController();
+
+        // Rotas públicas
         app.get("/", ctx -> ctx.redirect("/login"));
         app.get("/login", loginController::mostrarPaginaLogin);
         app.post("/login", loginController::processarLogin);
         app.get("/logout", loginController::logout);
 
-        app.get("/area-interna", ctx -> {
-            if (ctx.sessionAttribute("usuario") == null) {
-                ctx.redirect("/login");
-            } else {
-                ctx.render("area_interna.html");
+        // Middleware para proteger as rotas, baseado na sessão
+        app.before(ctx -> {
+            String path = ctx.path(); // Verifica a rota acessada
+            if (!path.equals("/login") && !path.equals("/")) { // Exceções para rotas públicas
+                verificarAutenticacao(ctx);
             }
         });
+
+        // Rotas protegidas
+        app.get("/area-interna", ctx -> ctx.render("area_interna.html"));
 
         ProjetoController projetoController = new ProjetoController();
         app.get("/projetos", projetoController::listarProjetos);
@@ -164,7 +182,26 @@ public class App {
         app.post("/participantes", participanteController::adicionarParticipante);
         app.get("/participantes/{id}/remover", participanteController::removerParticipante);
 
+        EmpresaController empresaController = new EmpresaController();
+        app.get("/empresas", empresaController::listarEmpresas);
+        app.get("/empresas/novo", empresaController::mostrarFormulario);
+        app.post("/empresas", empresaController::adicionarEmpresa);
+        app.get("/empresas/{id}/remover", empresaController::removerEmpresa);
     }
+
+    private void verificarAutenticacao(Context ctx) {
+        logger.info("Verificando autenticação para a rota: {}", ctx.path());
+        String autenticado = ctx.cookie("usuario_autenticado");
+
+        if (autenticado == null || !autenticado.equals("true")) {
+            logger.warn("Acesso negado. Usuário não autenticado tentando acessar: {}", ctx.path());
+            ctx.redirect("/login?erro=2");
+        }
+    }
+
+
+
+
 
     private Properties carregarPropriedades() {
         Properties prop = new Properties();
