@@ -75,7 +75,7 @@ public class ProjetoService extends AbstractService {
         projeto.setDescricao(doc.getString("descricao"));
         if (Objects.equals(doc.getString("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);
         if (Objects.equals(doc.getString("categoria"), "Pesquisa")) projeto.setCategoria(Categoria.PP);
-        if (Objects.equals(doc.getString("categoria"), "Integração com Empresa")) projeto.setCategoria(Categoria.PIE);
+        if (Objects.equals(doc.getString("categoria"), "Integração")) projeto.setCategoria(Categoria.PIE);
         if (Objects.equals(doc.getString("categoria"), "Outro"))  projeto.setCategoria(Categoria.Other);
         projeto.setDataInicio(doc.getDate("dataInicio").toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
         projeto.setDataEncerramento(doc.getDate("dataEncerramento").toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());

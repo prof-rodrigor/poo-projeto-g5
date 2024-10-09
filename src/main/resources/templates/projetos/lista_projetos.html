@@ -25,7 +25,9 @@
         <th:block th:each="projeto : ${projetos}">
             <tr>
                 <td th:text="${projeto.nome}">Nome do Projeto</td>
-                <td th:text="${projeto.categoria.descricao}">Categoria do Projeto</td>
+                <td>
+                    <span th:text="${projeto.categoria != null && projeto.categoria.descricao != null ? projeto.categoria.descricao : 'Sem categoria'}"></span>
+                </td>
                 <td th:text="${projeto.descricao}">Descrição do Projeto</td>
                 <td>
                     <span th:if="${projeto.coordenador != null}" th:text="${projeto.coordenador.nome}"></span>

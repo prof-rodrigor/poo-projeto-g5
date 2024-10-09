@@ -41,7 +41,7 @@ public class ProjetoController {
             projeto.setDescricao(ctx.formParam("descricao"));
             if (Objects.equals(ctx.formParam("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);
             if (Objects.equals(ctx.formParam("categoria"), "Pesquisa")) projeto.setCategoria(Categoria.PP);
-            if (Objects.equals(ctx.formParam("categoria"), "Integração com Empresa")) projeto.setCategoria(Categoria.PIE);
+            if (Objects.equals(ctx.formParam("categoria"), "Integração")) projeto.setCategoria(Categoria.PIE);
             if (Objects.equals(ctx.formParam("categoria"), "Outro"))  projeto.setCategoria(Categoria.Other);
             projeto.setDataInicio(LocalDate.parse(ctx.formParam("dataInicio")));
             projeto.setDataEncerramento(LocalDate.parse(ctx.formParam("dataEncerramento")));
