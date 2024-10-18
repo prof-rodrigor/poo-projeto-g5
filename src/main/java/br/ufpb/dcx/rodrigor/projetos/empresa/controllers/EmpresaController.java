@@ -21,35 +21,35 @@ public class EmpresaController {
         ctx.render("/empresas/form_empresa.html");
     }
 
-    public void adicionarEmpresa(Context ctx) {
+    public void mostrarFormularioEdicao(Context ctx) {
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
-        EnderecoService enderecoService = ctx.appData(Keys.ENDERECO_SERVICE.key());
-        try {
-            if ((!ctx.formParam("nome").isEmpty()) || (!ctx.formParam("cidade").isEmpty())) {
-                Empresa empresa = new Empresa();
-                empresa.setNome(ctx.formParam("nome"));
-                empresa.setSite(ctx.formParam("site"));
-                empresa.setInstagram(ctx.formParam("instagram"));
-                empresa.setLinkedin(ctx.formParam("linkedin"));
-                empresa.setGithub(ctx.formParam("github"));
-                empresa.setTelefone(ctx.formParam("telefone"));
 
-                Endereco endereco = new Endereco();
-                endereco.setCidade(ctx.formParam("cidade"));
-                endereco.setEstado(ctx.formParam("estado"));
-                endereco.setBairro(ctx.formParam("bairro"));
-                endereco.setRua(ctx.formParam("rua"));
-                endereco.setNumero(ctx.formParam("numero"));
-//            empresaService.adicionarEndereco(endereco);
-                empresa.setEndereco(enderecoService.buscarEnderecoPorId(enderecoService.adicionarEndereco(endereco)).get());
-                empresaService.adicionarEmpresa(empresa);
-            }
-            ctx.redirect("/empresas");
-        } catch (Exception e) {
-            ctx.status(500);
-            ctx.result("Erro ao adicionar empresa: " + e.getMessage());
-            e.printStackTrace();
+        String id = ctx.pathParam("id");
+        Empresa empresa = empresaService.buscarEmpresaPorId(id).get();
+
+        if(empresa != null) {
+            ctx.attribute("empresa", empresa);
+            ctx.render("/empresas/form_empresa.html");
+        } else {
+            System.out.println("Empresa com ID " + id + " não foi encontrado.");
+            ctx.status(404).result("Empresa não encontrada");
         }
+    }
+
+    public void atualizarEmpresa(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        Empresa empresa = extrairEmpresa(ctx);
+        String id = ctx.pathParam("id");
+        empresa.setId(id);
+        empresaService.atualizarEmpresa(empresa);
+        ctx.redirect("/empresas");
+    }
+
+    public void adicionarEmpresa(Context ctx) {
+        Empresa empresa = extrairEmpresa(ctx);
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        if(empresa != null) empresaService.adicionarEmpresa(empresa);
+        ctx.redirect("/empresas");
     }
 
     public void removerEmpresa(Context ctx) {
@@ -57,5 +57,30 @@ public class EmpresaController {
         String id = ctx.pathParam("id");
         empresaService.removerEmpresa(id);
         ctx.redirect("/empresas");
+    }
+
+    public static Empresa extrairEmpresa(Context ctx) {
+        EnderecoService enderecoService = ctx.appData(Keys.ENDERECO_SERVICE.key());
+        if ((!ctx.formParam("nome").isEmpty()) || (!ctx.formParam("cidade").isEmpty())) {
+            Empresa empresa = new Empresa();
+            empresa.setNome(ctx.formParam("nome"));
+            empresa.setSite(ctx.formParam("site"));
+            empresa.setInstagram(ctx.formParam("instagram"));
+            empresa.setLinkedin(ctx.formParam("linkedin"));
+            empresa.setGithub(ctx.formParam("github"));
+            empresa.setTelefone(ctx.formParam("telefone"));
+
+            Endereco endereco = new Endereco();
+            endereco.setCidade(ctx.formParam("cidade"));
+            endereco.setEstado(ctx.formParam("estado"));
+            endereco.setBairro(ctx.formParam("bairro"));
+            endereco.setRua(ctx.formParam("rua"));
+            endereco.setNumero(ctx.formParam("numero"));
+            endereco.setComplemento(ctx.pathParam("complemento"));
+            empresa.setEndereco(enderecoService.buscarEnderecoPorId(enderecoService.adicionarEndereco(endereco)).get());
+
+            return empresa;
+        }
+        return null;
     }
 }

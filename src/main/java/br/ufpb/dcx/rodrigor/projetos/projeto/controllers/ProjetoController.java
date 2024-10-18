@@ -30,8 +30,45 @@ public class ProjetoController {
         ctx.render("/projetos/form_projeto.html");
     }
 
-    public void adicionarProjeto(Context ctx) {
+    public void mostrarFormularioEdicao(Context ctx) {
         ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
+
+        String id = ctx.pathParam("id");
+        Projeto projeto = projetoService.buscarProjetoPorId(id).get();
+
+        if (projeto != null) {
+            ctx.attribute("projeto", projeto);
+            ctx.render("/projetos/form_projeto.html");
+        } else {
+            System.out.println("Projeto com ID " + id + " não foi encontrado.");
+            ctx.status(404).result("Projeto não encontrado");
+        }
+    }
+
+    public void adicionarProjeto(Context ctx) {
+        Projeto projeto = extrairProjeto(ctx);
+        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
+        if (projeto != null) projetoService.adicionarProjeto(projeto);
+        ctx.redirect("/projetos");
+    }
+
+    public void removerProjeto(Context ctx) {
+        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
+        String id = ctx.pathParam("id");
+        projetoService.removerProjeto(id);
+        ctx.redirect("/projetos");
+    }
+
+    public void atualizarProjeto(Context ctx){
+        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
+        Projeto projeto = extrairProjeto(ctx);
+        String id = ctx.pathParam("id");
+        projeto.setId(id);
+        projetoService.atualizarProjeto(projeto);
+        ctx.redirect("/projetos");
+    }
+
+    public static Projeto extrairProjeto(Context ctx) {
         ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
         EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
 
@@ -42,7 +79,7 @@ public class ProjetoController {
             if (Objects.equals(ctx.formParam("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);
             if (Objects.equals(ctx.formParam("categoria"), "Pesquisa")) projeto.setCategoria(Categoria.PP);
             if (Objects.equals(ctx.formParam("categoria"), "Integração")) projeto.setCategoria(Categoria.PIE);
-            if (Objects.equals(ctx.formParam("categoria"), "Outro"))  projeto.setCategoria(Categoria.Other);
+            if (Objects.equals(ctx.formParam("categoria"), "Outro")) projeto.setCategoria(Categoria.Other);
             projeto.setDataInicio(LocalDate.parse(ctx.formParam("dataInicio")));
             projeto.setDataEncerramento(LocalDate.parse(ctx.formParam("dataEncerramento")));
 
@@ -56,7 +93,7 @@ public class ProjetoController {
 
             String empresaId = ctx.formParam("empresa");
             Empresa empresa = new Empresa();
-            if (empresaId.isEmpty()){
+            if (empresaId.isEmpty()) {
 
             } else {
                 empresa = empresaService.buscarEmpresaPorId(empresaId).get();
@@ -64,15 +101,8 @@ public class ProjetoController {
 
             projeto.setEmpresa(empresa);
             projeto.setCoordenador(coordenador);
-            projetoService.adicionarProjeto(projeto);
+            return projeto;
         }
-        ctx.redirect("/projetos");
-    }
-
-    public void removerProjeto(Context ctx) {
-        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
-        String id = ctx.pathParam("id");
-        projetoService.removerProjeto(id);
-        ctx.redirect("/projetos");
+        return null;
     }
 }

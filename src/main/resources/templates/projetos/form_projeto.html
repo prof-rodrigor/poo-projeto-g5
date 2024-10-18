@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <title>Novo Projeto</title>
+    <title th:text="${projeto != null ? 'Editar Projeto' : 'Novo Projeto'}">Novo Projeto</title>
 </head>
 <body>
 <section>
-    <h2 class="mt-5">Novo Projeto</h2>
-    <form action="/projetos" method="post">
+    <h2 class="mt-5" th:text="${projeto != null ? 'Editar Projeto' : 'Novo Projeto'}">Novo Projeto</h2>
+    <form th:action="${projeto != null ? '/projetos/' + projeto.id + '/atualizar' : '/projetos'}" method="post">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" minlength="5" maxlength="50" class="form-control" id="nome" name="nome" placeholder="5-50 caracteres" required>
+            <input type="text" minlength="5" maxlength="50" class="form-control" id="nome" name="nome" placeholder="5-50 caracteres" required th:value="${projeto != null ? projeto.nome : ''}">
             <small id="contadorNome" class="form-text text-muted">40 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" placeholder="5-200 caracteres" rows="3" minlength="5" maxlength="200" required></textarea>
+            <textarea class="form-control" id="descricao" name="descricao" placeholder="5-200 caracteres" rows="3" minlength="5" maxlength="200" required th:text="${projeto != null ? projeto.descricao : ''}"></textarea>
             <small id="contadorDescricao" class="form-text text-muted">200 caracteres restantes</small>
         </div>
         <div class="mb-3">
@@ -22,7 +22,7 @@
             <select class="form-select" id="coordenador" name="coordenador" required>
                 <option value="">Selecione um coordenador</option>
                 <th:block th:each="professor : ${professores}">
-                    <option th:value="${professor.id}" th:text="${professor.nome}"></option>
+                    <option th:value="${professor.id}" th:selected="${projeto != null && projeto.coordenador != null && projeto.coordenador.id == professor.id}" th:text="${professor.nome}"></option>
                 </th:block>
             </select>
         </div>
@@ -31,64 +31,71 @@
             <select class="form-select" id="empresa" name="empresa" required>
                 <option value="">Selecione a empresa vinculada ao projeto</option>
                 <th:block th:each="empresa : ${empresas}">
-                    <option th:value="${empresa.id}" th:text="${empresa.nome}"></option>
+                    <option th:value="${empresa.id}" th:selected="${projeto != null && projeto.empresa != null && projeto.empresa.id == empresa.id}" th:text="${empresa.nome}"></option>
                 </th:block>
             </select>
         </div>
         <div class="mb-3">
             <label for="categoria" class="form-label">Categoria</label>
             <select class="form-control" id="categoria" name="categoria" rows="3" required>
-                <option value="Extensão">Extensão</option>
-                <option value="Pesquisa">Pesquisa</option>
-                <option value="Integração">Integração com empresa</option>
-                <option value="Outro">Outro</option>
+                <option th:selected="${projeto != null && projeto.categoria != null && projeto.categoria.descricao == 'Extensão'}" value="Extensão">Extensão</option>
+                <option th:selected="${projeto != null && projeto.categoria != null && projeto.categoria.descricao == 'Pesquisa'}" value="Pesquisa">Pesquisa</option>
+                <option th:selected="${projeto != null && projeto.categoria != null && projeto.categoria.descricao == 'Integração'}" value="Integração">Integração com empresa</option>
+                <option th:selected="${projeto != null && projeto.categoria != null && projeto.categoria.descricao == 'Outro'}" value="Outro">Outro</option>
             </select>
         </div>
         <div class="mb-3">
             <label for="dataInicio" class="form-label">Data de Início</label>
-            <input type="date" class="form-control" id="dataInicio" name="dataInicio" required>
+            <input type="date" class="form-control" id="dataInicio" name="dataInicio" required th:value="${projeto != null ? projeto.dataInicio : ''}">
         </div>
         <div class="mb-3">
             <label for="dataEncerramento" class="form-label">Data de Encerramento</label>
-            <input type="date" class="form-control" id="dataEncerramento" name="dataEncerramento" required>
+            <input type="date" class="form-control" id="dataEncerramento" name="dataEncerramento" required th:value="${projeto != null ? projeto.dataEncerramento : ''}">
         </div>
 
-        <button type="submit" class="btn btn-primary">Salvar</button>
+        <button type="submit" class="btn btn-primary" th:text="${projeto != null ? 'Atualizar' : 'Salvar'}">Salvar</button>
         <a href="/projetos" class="btn btn-secondary">Cancelar</a>
     </form>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            function atualizarContador(campo, contadorId) {
-                const maxLength = campo.getAttribute('maxlength');
-                const currentLength = campo.value.length;
-                const contador = document.getElementById(contadorId);
-                contador.textContent = `${maxLength - currentLength} caracteres restantes`;
-            }
+        function atualizarContador(campo, contadorId) {
+            const maxLength = campo.getAttribute('maxlength');
+            const currentLength = campo.value.length;
+            const contador = document.getElementById(contadorId);
+            contador.textContent = `${maxLength - currentLength} caracteres restantes`;
+        }
 
-            const inputNome = document.getElementById('nome');
-            inputNome.addEventListener('input', function() {
-                atualizarContador(inputNome, 'contadorNome');
-            });
+        const inputNome = document.getElementById('nome');
+        const textareaDescricao = document.getElementById('descricao');
 
-            const textareaDescricao = document.getElementById('descricao');
-            textareaDescricao.addEventListener('input', function() {
-                atualizarContador(textareaDescricao, 'contadorDescricao');
-            });
+        // Atualiza os contadores assim que a página é carregada
+        atualizarContador(inputNome, 'contadorNome');
+        atualizarContador(textareaDescricao, 'contadorDescricao');
+
+        // Atualiza os contadores enquanto o usuário digita
+        inputNome.addEventListener('input', function() {
+            atualizarContador(inputNome, 'contadorNome');
         });
 
-        function validarDatas() {
-            const dataInicio = document.getElementById('dataInicio');
-            const dataEncerramento = document.getElementById('dataEncerramento');
+        textareaDescricao.addEventListener('input', function() {
+            atualizarContador(textareaDescricao, 'contadorDescricao');
+        });
+    });
 
-            const dataInicioValor = new Date(dataInicio.value);
-            const dataEncerramentoValor = new Date(dataEncerramento.value);
 
-            if (dataEncerramentoValor < dataInicioValor) {
-                dataEncerramento.setCustomValidity('A data de início deve ser maior que a data de encerramento.');
-            } else {
-                dataEncerramento.setCustomValidity('');
+            function validarDatas() {
+                const dataInicio = document.getElementById('dataInicio');
+                const dataEncerramento = document.getElementById('dataEncerramento');
+
+                const dataInicioValor = new Date(dataInicio.value);
+                const dataEncerramentoValor = new Date(dataEncerramento.value);
+
+                if (dataEncerramentoValor < dataInicioValor) {
+                    dataEncerramento.setCustomValidity('A data de início deve ser maior que a data de encerramento.');
+                } else {
+                    dataEncerramento.setCustomValidity('');
+                }
             }
-        }
 
             window.onload = function() {
                 document.getElementById('dataEncerramento').addEventListener('input', validarDatas);

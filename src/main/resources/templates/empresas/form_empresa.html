@@ -1,104 +1,119 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
 <head>
-    <title>Nova Empresa</title>
+    <title th:text="${empresa != null} ? 'Editar Empresa' : 'Nova Empresa'">Nova Empresa</title>
 </head>
 <body>
 <section>
-    <h2 class="mt-5">Nova Empresa</h2>
-    <form action="/empresas" method="post">
-        <div class="mb-3">
+    <h2 class="mt-5" th:text="${empresa != null} ? 'Editar Empresa' : 'Nova Empresa'">Nova Empresa</h2>
+    <form th:action="${empresa != null} ? '/empresas/' + ${empresa.id} + '/atualizar' : '/empresas'" method="post">
+    <div class="mb-3">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" minlength="5" maxlength="100" class="form-control" id="nome" name="nome" placeholder="5-100 caracteres" required>
+            <input type="text" minlength="5" maxlength="100" class="form-control" id="nome" name="nome" placeholder="5-100 caracteres" required
+                   th:value="${empresa != null} ? ${empresa.nome} : ''">
             <small id="contadorNome" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="site" class="form-label">Site</label>
-            <textarea class="form-control" id="site" name="site" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"></textarea>
+            <textarea class="form-control" id="site" name="site" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"
+                      th:text="${empresa != null} ? ${empresa.site} : ''"></textarea>
             <small id="contadorSite" class="form-text text-muted">255 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="instagram" class="form-label">Instagram</label>
-            <textarea class="form-control" id="instagram" name="instagram" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"></textarea>
+            <textarea class="form-control" id="instagram" name="instagram" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"
+                      th:text="${empresa != null} ? ${empresa.instagram} : ''"></textarea>
             <small id="contadorInstagram" class="form-text text-muted">30 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="linkedin" class="form-label">Linkedin</label>
-            <textarea class="form-control" id="linkedin" name="linkedin" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"></textarea>
+            <textarea class="form-control" id="linkedin" name="linkedin" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"
+                      th:text="${empresa != null} ? ${empresa.linkedin} : ''"></textarea>
             <small id="contadorLinkedin" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="github" class="form-label">Github</label>
-            <textarea class="form-control" id="github" name="github" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"></textarea>
+            <textarea class="form-control" id="github" name="github" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"
+                      th:text="${empresa != null} ? ${empresa.github} : ''"></textarea>
             <small id="contadorGithub" class="form-text text-muted">40 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" minlength="8" maxlength="11" class="form-control" id="telefone" name="telefone" placeholder="8-11 numeros" pattern="[0-9]+" title="Por favor, insira apenas números" required>
+            <input type="text" minlength="8" maxlength="11" class="form-control" id="telefone" name="telefone" placeholder="8-11 numeros" pattern="[0-9]+" title="Por favor, insira apenas números" required
+                   th:value="${empresa != null} ? ${empresa.telefone} : ''">
             <small id="contadorTelefone" class="form-text text-muted">11 caracteres restantes</small>
         </div>
+
         <h2 class="mt-5">Endereço</h2>
         <div class="mb-3">
             <label for="cidade" class="form-label">Cidade</label>
-            <textarea class="form-control" id="cidade" name="cidade" placeholder="3-50 caracteres" rows="1" minlength="3" maxlength="50" required></textarea>
+            <textarea class="form-control" id="cidade" name="cidade" placeholder="3-50 caracteres" rows="1" minlength="3" maxlength="50" required
+                      th:text="${empresa != null} ? ${empresa.endereco.cidade} : ''"></textarea>
             <small id="contadorCidade" class="form-text text-muted">50 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="estado" class="form-label">Estado</label>
-            <select class="form-control" id="estado" name="estado" rows="3" required>
+            <select class="form-control" id="estado" name="estado" required>
                 <option value="">Selecione um estado</option>
-                <option value="AC">Acre</option>
-                <option value="AL">Alagoas</option>
-                <option value="AP">Amapá</option>
-                <option value="AM">Amazonas</option>
-                <option value="BA">Bahia</option>
-                <option value="CE">Ceará</option>
-                <option value="DF">Distrito Federal</option>
-                <option value="ES">Espírito Santo</option>
-                <option value="GO">Goiás</option>
-                <option value="MA">Maranhão</option>
-                <option value="MT">Mato Grosso</option>
-                <option value="MS">Mato Grosso do Sul</option>
-                <option value="MG">Minas Gerais</option>
-                <option value="PA">Pará</option>
-                <option value="PB">Paraíba</option>
-                <option value="PR">Paraná</option>
-                <option value="PE">Pernambuco</option>
-                <option value="PI">Piauí</option>
-                <option value="RJ">Rio de Janeiro</option>
-                <option value="RN">Rio Grande do Norte</option>
-                <option value="RS">Rio Grande do Sul</option>
-                <option value="RO">Rondônia</option>
-                <option value="RR">Roraima</option>
-                <option value="SC">Santa Catarina</option>
-                <option value="SP">São Paulo</option>
-                <option value="SE">Sergipe</option>
-                <option value="TO">Tocantins</option>
+                <option value="AC" th:selected="${empresa != null and empresa.endereco.estado == 'AC'}">Acre</option>
+                <option value="AL" th:selected="${empresa != null and empresa.endereco.estado == 'AL'}">Alagoas</option>
+                <option value="AP" th:selected="${empresa != null and empresa.endereco.estado == 'AP'}">Amapá</option>
+                <option value="AM" th:selected="${empresa != null and empresa.endereco.estado == 'AM'}">Amazonas</option>
+                <option value="BA" th:selected="${empresa != null and empresa.endereco.estado == 'BA'}">Bahia</option>
+                <option value="CE" th:selected="${empresa != null and empresa.endereco.estado == 'CE'}">Ceará</option>
+                <option value="DF" th:selected="${empresa != null and empresa.endereco.estado == 'DF'}">Distrito Federal</option>
+                <option value="ES" th:selected="${empresa != null and empresa.endereco.estado == 'ES'}">Espírito Santo</option>
+                <option value="GO" th:selected="${empresa != null and empresa.endereco.estado == 'GO'}">Goiás</option>
+                <option value="MA" th:selected="${empresa != null and empresa.endereco.estado == 'MA'}">Maranhão</option>
+                <option value="MT" th:selected="${empresa != null and empresa.endereco.estado == 'MT'}">Mato Grosso</option>
+                <option value="MS" th:selected="${empresa != null and empresa.endereco.estado == 'MS'}">Mato Grosso do Sul</option>
+                <option value="MG" th:selected="${empresa != null and empresa.endereco.estado == 'MG'}">Minas Gerais</option>
+                <option value="PA" th:selected="${empresa != null and empresa.endereco.estado == 'PA'}">Pará</option>
+                <option value="PB" th:selected="${empresa != null and empresa.endereco.estado == 'PB'}">Paraíba</option>
+                <option value="PR" th:selected="${empresa != null and empresa.endereco.estado == 'PR'}">Paraná</option>
+                <option value="PE" th:selected="${empresa != null and empresa.endereco.estado == 'PE'}">Pernambuco</option>
+                <option value="PI" th:selected="${empresa != null and empresa.endereco.estado == 'PI'}">Piauí</option>
+                <option value="RJ" th:selected="${empresa != null and empresa.endereco.estado == 'RJ'}">Rio de Janeiro</option>
+                <option value="RN" th:selected="${empresa != null and empresa.endereco.estado == 'RN'}">Rio Grande do Norte</option>
+                <option value="RS" th:selected="${empresa != null and empresa.endereco.estado == 'RS'}">Rio Grande do Sul</option>
+                <option value="RO" th:selected="${empresa != null and empresa.endereco.estado == 'RO'}">Rondônia</option>
+                <option value="RR" th:selected="${empresa != null and empresa.endereco.estado == 'RR'}">Roraima</option>
+                <option value="SC" th:selected="${empresa != null and empresa.endereco.estado == 'SC'}">Santa Catarina</option>
+                <option value="SP" th:selected="${empresa != null and empresa.endereco.estado == 'SP'}">São Paulo</option>
+                <option value="SE" th:selected="${empresa != null and empresa.endereco.estado == 'SE'}">Sergipe</option>
+                <option value="TO" th:selected="${empresa != null and empresa.endereco.estado == 'TO'}">Tocantins</option>
             </select>
         </div>
         <div class="mb-3">
             <label for="bairro" class="form-label">Bairro</label>
-            <textarea class="form-control" id="bairro" name="bairro" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100" required></textarea>
-            <small id="contadorBairro" class="form-text text-muted">50 caracteres restantes</small>
+            <textarea class="form-control" id="bairro" name="bairro" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100" required
+                      th:text="${empresa != null} ? ${empresa.endereco.bairro} : ''"></textarea>
+            <small id="contadorBairro" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="rua" class="form-label">Rua</label>
-            <textarea class="form-control" id="rua" name="rua" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100" required></textarea>
+            <textarea class="form-control" id="rua" name="rua" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100" required
+                      th:text="${empresa != null} ? ${empresa.endereco.rua} : ''"></textarea>
             <small id="contadorRua" class="form-text text-muted">100 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="numero" class="form-label">Número</label>
-            <textarea class="form-control" id="numero" name="numero" placeholder="1-5 caracteres" rows="1" minlength="1" maxlength="5" required></textarea>
-            <small id="contadorNumero" class="form-text text-muted">10 caracteres restantes</small>
+            <textarea class="form-control" id="numero" name="numero" placeholder="1-5 caracteres" rows="1" minlength="1" maxlength="5" required
+                      th:text="${empresa != null} ? ${empresa.endereco.numero} : ''"></textarea>
+            <small id="contadorNumero" class="form-text text-muted">5 caracteres restantes</small>
         </div>
         <div class="mb-3">
             <label for="complemento" class="form-label">Complemento</label>
-            <textarea class="form-control" id="complemento" name="complemento" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"></textarea>
-            <small id="contadorComplemento" class="form-text text-muted">50 caracteres restantes</small>
+            <textarea class="form-control" id="complemento" name="complemento" placeholder="5-100 caracteres" rows="1" minlength="5" maxlength="100"
+                      th:text="${empresa != null} ? ${empresa.endereco.complemento} : ''"></textarea>
+            <small id="contadorComplemento" class="form-text text-muted">100 caracteres restantes</small>
         </div>
-        <button type="submit" class="btn btn-primary">Salvar</button>
+
+
+        <button type="submit" class="btn btn-primary" th:text="${empresa != null} ? 'Atualizar' : 'Salvar'">Salvar</button>
         <a href="/empresas" class="btn btn-secondary">Cancelar</a>
     </form>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             function atualizarContador(campo) {
@@ -109,9 +124,11 @@
                     contador.textContent = `${maxLength - currentLength} caracteres restantes`;
                 }
             }
+
             const camposComContador = document.querySelectorAll('input[maxlength], textarea[maxlength]');
 
-            // Adicionar evento de input para todos os campos selecionados
+            camposComContador.forEach(campo => atualizarContador(campo));
+
             camposComContador.forEach(campo => {
                 campo.addEventListener('input', function() {
                     atualizarContador(campo);
@@ -123,3 +140,4 @@
 </section>
 </body>
 </html>
+

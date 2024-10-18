@@ -45,7 +45,11 @@
                     <td th:text="${empresa.telefone}">Telefone</td>
                     <td th:if="${empresa.endereco}" th:text="${empresa.endereco.cidade + ', ' + empresa.endereco.bairro + ', ' + empresa.endereco.estado + ' - ' + empresa.endereco.rua + ' - ' + empresa.endereco.numero}">Endereço</td>
                     <td th:if="${not empresa.endereco}" th:text="'Endereço não disponível'">Endereço</td>
-
+                    <td>
+                        <button class="btn btn-primary btn-sm" th:data-id="${empresa.id}" onclick="editarEmpresa(this)">
+                            Editar
+                        </button>
+                    </td>
                     <td>
                         <button class="btn btn-danger btn-sm" th:data-id="${empresa.id}" onclick="removerEmpresa(this)">
                             Remover
@@ -55,12 +59,16 @@
             </th:block>
             </tbody>
         </table>
+        <div th:replace="~{componentes/confirmacao_exclusao}"></div>
         <script>
+            function editarEmpresa(button) {
+                const id = button.getAttribute('data-id');
+                window.location.href = `empresas/${id}/editar`;
+            }
+
             function removerEmpresa(button) {
                 const id = button.getAttribute('data-id');
-                if (confirm('Tem certeza que deseja remover essa empresa?')) {
-                window.location.href = `/empresas/${id}/remover`;
-            }
+                confirmarExclusao(`/empresas/${id}/remover`);
             }
         </script>
     </section>

@@ -25,7 +25,7 @@ public class EmpresaService extends AbstractService {
     private List<Endereco> enderecos = new ArrayList<>();
     private Long ultimoIdEndereco = 1L;
 
-    private EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
+    private EnderecoService enderecoService;
 
     private Empresa semEmpresa = new Empresa("Não há empresa vinculada ao projeto",
             "semEmpresa.com",
@@ -37,10 +37,11 @@ public class EmpresaService extends AbstractService {
 
     private static final Logger logger = LogManager.getLogger();
 
-    public EmpresaService(MongoDBConnector mongoDBConnector) {
+    public EmpresaService(MongoDBConnector mongoDBConnector, EnderecoService enderecoService) {
         super(mongoDBConnector);
         MongoDatabase database = mongoDBConnector.getDatabase("empresas");
         this.collection = database.getCollection("empresas");
+        this.enderecoService = enderecoService;
 
         Document query = new Document("nome", semEmpresa.getNome());
         long count = collection.countDocuments(query);
@@ -53,46 +54,21 @@ public class EmpresaService extends AbstractService {
 //        endereco.setId(String.valueOf(ultimoIdEndereco++));
 //        enderecos.add(endereco);
 //    }
-    public Endereco adicionarEndereco(Endereco endereco){
-        endereco.setId(String.valueOf(ultimoIdEndereco++));
-        enderecos.add(endereco);
-        return endereco;
-    }
-    public Endereco buscarEnderecoPorId(String id){
-        for (Endereco endereco : enderecos){
-            if (endereco.getId().equals(id)) return endereco;
-        }
-        return null;
-    }
-
-    public List<Endereco> getEnderecos() {
-        return enderecos;
-    }
-
-    public void getEndereco(){
-        for (Endereco endereco: enderecos){
-
-        }
-    }
-
 
     public List<Empresa> listarEmpresas() {
         List<Empresa> empresas = new ArrayList<>();
 
-        // Populando a lista de empresas a partir do banco de dados
         for (Document doc : collection.find()) {
             empresas.add(documentToEmpresa(doc));
         }
 
-        // Usando iterador para evitar problemas ao remover durante a iteração
         Iterator<Empresa> iterator = empresas.iterator();
 
         while (iterator.hasNext()) {
             Empresa empresa = iterator.next();
 
-            // Verifica se o nome da empresa é o mesmo que o de "semEmpresa"
             if (empresa.getNome().equals(semEmpresa.getNome())) {
-                iterator.remove();  // Remove a empresa usando o iterador
+                iterator.remove();
                 break;
             }
         }

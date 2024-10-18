@@ -70,7 +70,7 @@ public class ProjetoService extends AbstractService {
 
     public Projeto documentToProjeto(Document doc) {
         Projeto projeto = new Projeto();
-        projeto.setId(doc.getObjectId("_id").toString());
+        projeto.setId(doc.getObjectId("_id").toHexString());
         projeto.setNome(doc.getString("nome"));
         projeto.setDescricao(doc.getString("descricao"));
         if (Objects.equals(doc.getString("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);

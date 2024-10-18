@@ -4,6 +4,8 @@ import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
 import br.ufpb.dcx.rodrigor.projetos.empresa.controllers.EmpresaController;
 import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
 import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
+import br.ufpb.dcx.rodrigor.projetos.form.controller.FormController;
+import br.ufpb.dcx.rodrigor.projetos.form.services.FormService;
 import br.ufpb.dcx.rodrigor.projetos.login.LoginController;
 import br.ufpb.dcx.rodrigor.projetos.participante.controllers.ParticipanteController;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
@@ -52,12 +54,13 @@ public class App {
     }
     private void registrarServicos(JavalinConfig config, MongoDBConnector mongoDBConnector) {
         ParticipanteService participanteService = new ParticipanteService(mongoDBConnector);
-        EmpresaService empresaService = new EmpresaService(mongoDBConnector);
         EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
+        EmpresaService empresaService = new EmpresaService(mongoDBConnector, enderecoService);
         config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService, empresaService));
         config.appData(Keys.PARTICIPANTE_SERVICE.key(), participanteService);
         config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
         config.appData(Keys.ENDERECO_SERVICE.key(), enderecoService);
+        config.appData(Keys.FORM_SERVICE.key(), new FormService());
     }
     private void configurarPaginasDeErro(Javalin app) {
         app.error(404, ctx -> ctx.render("erro_404.html"));
@@ -175,6 +178,8 @@ public class App {
         app.get("/projetos/novo", projetoController::mostrarFormulario);
         app.post("/projetos", projetoController::adicionarProjeto);
         app.get("/projetos/{id}/remover", projetoController::removerProjeto);
+        app.get("/projetos/{id}/editar", projetoController::mostrarFormularioEdicao);
+        app.post("/projetos/{id}/atualizar", projetoController::atualizarProjeto);
 
         ParticipanteController participanteController = new ParticipanteController();
         app.get("/participantes", participanteController::listarParticipantes);
@@ -187,6 +192,12 @@ public class App {
         app.get("/empresas/novo", empresaController::mostrarFormulario);
         app.post("/empresas", empresaController::adicionarEmpresa);
         app.get("/empresas/{id}/remover", empresaController::removerEmpresa);
+        app.get("/empresas/{id}/editar", empresaController::mostrarFormularioEdicao);
+        app.post("/empresas/{id}/atualizar", empresaController::atualizarEmpresa);
+
+//        FormController formController = new FormController();
+//        app.get("/form/{formId}", formController::abrirFormulario);
+//        app.post("/form/{formId}", formController::validarFormulario);
     }
 
     private void verificarAutenticacao(Context ctx) {
