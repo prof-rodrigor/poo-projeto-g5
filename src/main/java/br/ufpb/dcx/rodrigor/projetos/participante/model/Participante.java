@@ -12,6 +12,19 @@ public class Participante {
 
     // Getters and Setters
 
+    public void testaEntrada(String x){
+        if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
+    }
+
+    public void testaNumero(String x) {
+        if (x == null || x.isEmpty()) {
+            throw new IllegalArgumentException("O número de telefone não pode ser nulo ou vazio.");
+        }
+        if (!x.matches("\\d+")) {
+            throw new IllegalArgumentException("O número informado contém valores que não são números.");
+        }
+    }
+
     public ObjectId getId() {
         return id;
     }
@@ -49,6 +62,7 @@ public class Participante {
     }
 
     public void setTelefone(String telefone) {
+        testaNumero(telefone);
         this.telefone = telefone;
     }
 

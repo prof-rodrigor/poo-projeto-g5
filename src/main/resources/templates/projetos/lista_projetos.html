@@ -12,8 +12,10 @@
         <thead>
         <tr>
             <th>Nome</th>
+            <th>Categoria</th>
             <th>Descrição</th>
             <th>Coordenador</th>
+            <th>Empresa vinculada</th>
             <th>Data de Início</th>
             <th>Data de Encerramento</th>
             <th>Ações</th>
@@ -23,12 +25,22 @@
         <th:block th:each="projeto : ${projetos}">
             <tr>
                 <td th:text="${projeto.nome}">Nome do Projeto</td>
+                <td>
+                    <span th:text="${projeto.categoria != null && projeto.categoria.descricao != null ? projeto.categoria.descricao : 'Sem categoria'}"></span>
+                </td>
                 <td th:text="${projeto.descricao}">Descrição do Projeto</td>
                 <td>
                     <span th:if="${projeto.coordenador != null}" th:text="${projeto.coordenador.nome}"></span>
                     <span th:if="${projeto.coordenador == null}" style="font-weight: bold;">Sem coordenador</span>
-                </td>                <td th:text="${projeto.dataInicio}">01/01/2023</td>
+                </td>
+                <td th:text="${projeto.empresa.nome}">Empresa</td>
+                <td th:text="${projeto.dataInicio}">01/01/2023</td>
                 <td th:text="${projeto.dataEncerramento}">31/12/2023</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" th:data-id="${projeto.id}" onclick="editarProjeto(this)">
+                        Editar
+                    </button>
+                </td>
                 <td>
                     <button class="btn btn-danger btn-sm" th:data-id="${projeto.id}" onclick="removerProjeto(this)">
                         Remover
@@ -38,10 +50,16 @@
         </th:block>
         </tbody>
     </table>
+    <div th:replace="~{componentes/confirmacao_exclusao}"></div>
     <script>
+        function editarProjeto(button) {
+            const id = button.getAttribute('data-id');
+            window.location.href = `/projetos/${id}/editar`;
+        }
+
         function removerProjeto(button) {
             const id = button.getAttribute('data-id');
-            window.location.href = `/projetos/${id}/remover`;
+            confirmarExclusao(`/projetos/${id}/remover`);
         }
     </script>
 </section>

@@ -2,37 +2,45 @@ package br.ufpb.dcx.rodrigor.projetos.empresa.model;
 
 public class Empresa {
     private String nome, site, instagram, linkedin, github, telefone;
+    private String id;
 
     private Endereco endereco;
 
+    public Empresa() {}
+
     public Empresa(String nome, String site, String instagram, String linkedin, String github, String telefone, Endereco endereco) {
-        testaEntrada(nome);
-        testaEntrada(site);
-        testaEntrada(instagram);
-        testaEntrada(linkedin);
-        testaEntrada(github);
-        testaNumero(telefone);
         this.nome = nome;
         this.site = site;
         this.instagram = instagram;
         this.linkedin = linkedin;
         this.github = github;
+
         this.telefone = telefone;
         this.endereco = endereco;
     }
 
-    public Empresa() {
+    public Empresa(String id, String nome, String site, String instagram, String linkedin, String github, String telefone, Endereco endereco) {
+        this.id = id;
+        this.nome = nome;
+        this.site = site;
+        this.instagram = instagram;
+        this.linkedin = linkedin;
+        this.github = github;
+        testaNumero(telefone);
+        this.telefone = telefone;
+        this.endereco = endereco;
     }
-    public void testaEntrada(String x){
+
+     public void testaEntrada(String x){
         if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
     }
 
     public void testaNumero(String x) {
-        for (int i = 0; i < x.length(); i++) {
-            char c = x.charAt(i);
-            if (!Character.isDigit(c)) {
-                throw new IllegalArgumentException("O número informado contém valores que não são números.");
-            }
+        if (x == null || x.isEmpty()) {
+            throw new IllegalArgumentException("O número de telefone não pode ser nulo ou vazio.");
+        }
+        if (!x.matches("\\d+")) {  // Verifica se todos os caracteres são números
+            throw new IllegalArgumentException("O número informado contém valores que não são números.");
         }
     }
 
@@ -41,8 +49,15 @@ public class Empresa {
     }
 
     public void setNome(String nome) {
-        testaEntrada(nome);
         this.nome = nome;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSite() {
@@ -50,7 +65,6 @@ public class Empresa {
     }
 
     public void setSite(String site) {
-        testaEntrada(site);
         this.site = site;
     }
 
@@ -59,7 +73,6 @@ public class Empresa {
     }
 
     public void setInstagram(String instagram) {
-        testaEntrada(instagram);
         this.instagram = instagram;
     }
 
@@ -68,7 +81,6 @@ public class Empresa {
     }
 
     public void setLinkedin(String linkedin) {
-        testaEntrada(linkedin);
         this.linkedin = linkedin;
     }
 
@@ -77,7 +89,6 @@ public class Empresa {
     }
 
     public void setGithub(String github) {
-        testaEntrada(github);
         this.github = github;
     }
 
