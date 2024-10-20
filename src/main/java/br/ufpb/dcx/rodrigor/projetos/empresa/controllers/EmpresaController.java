@@ -1,61 +1,86 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.controllers;
 
 import br.ufpb.dcx.rodrigor.projetos.Keys;
-import br.ufpb.dcx.rodrigor.projetos.participante.model.CategoriaParticipante;
-import br.ufpb.dcx.rodrigor.projetos.participante.model.Participante;
-import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
-import br.ufpb.dcx.rodrigor.projetos.projeto.model.Categoria;
-import br.ufpb.dcx.rodrigor.projetos.projeto.model.Projeto;
-import br.ufpb.dcx.rodrigor.projetos.projeto.services.ProjetoService;
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Empresa;
+import br.ufpb.dcx.rodrigor.projetos.empresa.model.Endereco;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
 import io.javalin.http.Context;
 
-import java.time.LocalDate;
-import java.util.Objects;
-
 public class EmpresaController {
+
     public void listarEmpresas(Context ctx) {
-        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
-        ctx.attribute("empresas", projetoService.listarProjetos());
-        ctx.render("/projetos/lista_projetos.html");
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        ctx.attribute("empresas", empresaService.listarEmpresas());
+        ctx.render("/empresas/lista_empresas.html");
     }
 
     public void mostrarFormulario(Context ctx) {
-        ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
-        ctx.attribute("professores", participanteService.listarProfessores());
-        ctx.render("/projetos/form_projeto.html");
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        ctx.attribute("empresas", empresaService.listarEmpresas());
+        ctx.render("/empresas/form_empresa.html");
     }
 
-    public void adicionarProjeto(Context ctx) {
-        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
-        ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
+    public void mostrarFormularioEdicao(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
 
-        Projeto projeto = new Projeto();
-        projeto.setNome(ctx.formParam("nome"));
-        projeto.setDescricao(ctx.formParam("descricao"));
-        if (Objects.equals(ctx.formParam("categoria"), "Extensão")) projeto.setCategoria(Categoria.PE);
-        if (Objects.equals(ctx.formParam("categoria"), "Pesquisa")) projeto.setCategoria(Categoria.PP);
-        if (Objects.equals(ctx.formParam("categoria"), "Integração com Empresa")) projeto.setCategoria(Categoria.PIE);
-        if (Objects.equals(ctx.formParam("categoria"), "Outro"))  projeto.setCategoria(Categoria.Other);
-        projeto.setDataInicio(LocalDate.parse(ctx.formParam("dataInicio")));
-        projeto.setDataEncerramento(LocalDate.parse(ctx.formParam("dataEncerramento")));
-
-        String coordenadorId = ctx.formParam("coordenador");
-        Participante coordenador = participanteService.buscarParticipantePorId(coordenadorId)
-                .orElseThrow(() -> new IllegalArgumentException("Coordenador não encontrado"));
-
-        if (coordenador.getCategoria() != CategoriaParticipante.PROFESSOR) {
-            throw new IllegalArgumentException("Somente professores podem ser coordenadores.");
-        }
-
-        projeto.setCoordenador(coordenador);
-        projetoService.adicionarProjeto(projeto);
-        ctx.redirect("/projetos");
-    }
-
-    public void removerProjeto(Context ctx) {
-        ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
         String id = ctx.pathParam("id");
-        projetoService.removerProjeto(id);
-        ctx.redirect("/projetos");
+        Empresa empresa = empresaService.buscarEmpresaPorId(id).get();
+
+        if(empresa != null) {
+            ctx.attribute("empresa", empresa);
+            ctx.render("/empresas/form_empresa.html");
+        } else {
+            System.out.println("Empresa com ID " + id + " não foi encontrado.");
+            ctx.status(404).result("Empresa não encontrada");
+        }
+    }
+
+    public void atualizarEmpresa(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        Empresa empresa = extrairEmpresa(ctx);
+        String id = ctx.pathParam("id");
+        empresa.setId(id);
+        empresaService.atualizarEmpresa(empresa);
+        ctx.redirect("/empresas");
+    }
+
+    public void adicionarEmpresa(Context ctx) {
+        Empresa empresa = extrairEmpresa(ctx);
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        if(empresa != null) empresaService.adicionarEmpresa(empresa);
+        ctx.redirect("/empresas");
+    }
+
+    public void removerEmpresa(Context ctx) {
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        String id = ctx.pathParam("id");
+        empresaService.removerEmpresa(id);
+        ctx.redirect("/empresas");
+    }
+
+    public static Empresa extrairEmpresa(Context ctx) {
+        EnderecoService enderecoService = ctx.appData(Keys.ENDERECO_SERVICE.key());
+        if ((!ctx.formParam("nome").isEmpty()) || (!ctx.formParam("cidade").isEmpty())) {
+            Empresa empresa = new Empresa();
+            empresa.setNome(ctx.formParam("nome"));
+            empresa.setSite(ctx.formParam("site"));
+            empresa.setInstagram(ctx.formParam("instagram"));
+            empresa.setLinkedin(ctx.formParam("linkedin"));
+            empresa.setGithub(ctx.formParam("github"));
+            empresa.setTelefone(ctx.formParam("telefone"));
+
+            Endereco endereco = new Endereco();
+            endereco.setCidade(ctx.formParam("cidade"));
+            endereco.setEstado(ctx.formParam("estado"));
+            endereco.setBairro(ctx.formParam("bairro"));
+            endereco.setRua(ctx.formParam("rua"));
+            endereco.setNumero(ctx.formParam("numero"));
+            endereco.setComplemento(ctx.formParam("complemento"));
+            empresa.setEndereco(enderecoService.buscarEnderecoPorId(enderecoService.adicionarEndereco(endereco)).get());
+
+            return empresa;
+        }
+        return null;
     }
 }

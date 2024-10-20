@@ -19,7 +19,6 @@ public class Projeto {
     private LocalDate dataEncerramento;
 
     public Projeto(String id, String nome, String descricao, Categoria categoria, List<Participante> participantes, Participante coordenador, Empresa empresa, LocalDate dataInicio, LocalDate dataEncerramento) {
-        testaNumero(id);
         testaEntrada(nome);
         testaEntrada(descricao);
         this.id = id;
@@ -64,21 +63,20 @@ public class Projeto {
         if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
     }
 
-    public void testaNumero(String x) {
-        for (int i = 0; i < x.length(); i++) {
-            char c = x.charAt(i);
-            if (!Character.isDigit(c)) {
-                throw new IllegalArgumentException("O número informado contém valores que não são números.");
-            }
-        }
-    }
+//    public void testaNumero(String x) {
+//        for (int i = 0; i < x.length(); i++) {
+//            char c = x.charAt(i);
+//            if (!Character.isDigit(c)) {
+//                throw new IllegalArgumentException("O número informado contém valores que não são números.");
+//            }
+//        }
+//    }
 
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
-        testaNumero(id);
         this.id = id;
     }
 
@@ -91,8 +89,11 @@ public class Projeto {
     }
 
     public void setCoordenador(Participante coordenador) {
-        if(!coordenador.getCategoria().equals(CategoriaParticipante.PROFESSOR)) {
-            throw new IllegalArgumentException("O coordenador deve ser um professor: "+coordenador);
+        if (coordenador == null) {
+            throw new IllegalArgumentException("O coordenador não pode ser nulo");
+        }
+        if (!coordenador.getCategoria().equals(CategoriaParticipante.PROFESSOR)) {
+            throw new IllegalArgumentException("O coordenador deve ser um professor: " + coordenador);
         }
         this.coordenador = coordenador;
     }
