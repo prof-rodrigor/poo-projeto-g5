@@ -1,8 +1,5 @@
 package br.ufpb.dcx.rodrigor.projetos.form.model.validadores;
 
-import br.ufpb.dcx.rodrigor.projetos.form.model.ResultadoValidacao;
-import br.ufpb.dcx.rodrigor.projetos.form.model.ValidadorCampo;
-
 public class ValidadorTexto implements ValidadorCampo {
 
     private int min;
@@ -16,7 +13,7 @@ public class ValidadorTexto implements ValidadorCampo {
     @Override
     public ResultadoValidacao validarCampo(String valor) {
         if(valor.length() < min || valor.length() > max){
-            return new ResultadoValidacao( "O valor deve ter entre " + min + " e " + max + " caracteres");
+            return new ResultadoValidacao( "O texto informado deve ter entre " + min + " e " + max + " caracteres");
         }
         return new ResultadoValidacao();
     }

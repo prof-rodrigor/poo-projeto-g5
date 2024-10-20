@@ -60,7 +60,7 @@ public class App {
         config.appData(Keys.PARTICIPANTE_SERVICE.key(), participanteService);
         config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
         config.appData(Keys.ENDERECO_SERVICE.key(), enderecoService);
-        config.appData(Keys.FORM_SERVICE.key(), new FormService());
+        config.appData(Keys.FORM_SERVICE.key(), new FormService(mongoDBConnector));
     }
     private void configurarPaginasDeErro(Javalin app) {
         app.error(404, ctx -> ctx.render("erro_404.html"));
@@ -162,10 +162,9 @@ public class App {
         app.post("/login", loginController::processarLogin);
         app.get("/logout", loginController::logout);
 
-        // Middleware para proteger as rotas, baseado na sessão
         app.before(ctx -> {
-            String path = ctx.path(); // Verifica a rota acessada
-            if (!path.equals("/login") && !path.equals("/")) { // Exceções para rotas públicas
+            String path = ctx.path();
+            if (!path.equals("/login") && !path.equals("/")) {
                 verificarAutenticacao(ctx);
             }
         });
@@ -195,9 +194,9 @@ public class App {
         app.get("/empresas/{id}/editar", empresaController::mostrarFormularioEdicao);
         app.post("/empresas/{id}/atualizar", empresaController::atualizarEmpresa);
 
-//        FormController formController = new FormController();
-//        app.get("/form/{formId}", formController::abrirFormulario);
-//        app.post("/form/{formId}", formController::validarFormulario);
+        FormController formController = new FormController();
+        app.get("/form/{formId}", formController::abrirFormulario);
+        app.post("/form/{formId}", formController::validarFormulario);
     }
 
     private void verificarAutenticacao(Context ctx) {

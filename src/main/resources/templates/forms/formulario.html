@@ -2,22 +2,80 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Formulário</title>
+    <title th:text="${form.titulo.titulo}">Formulário</title>
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-    <h1 th:text="${form.nome}">Título Form</h1>
+    <h1 th:text="${form.titulo.titulo}">Título do Formulário</h1>
     <form th:action="@{/form/{formId}(formId=${form.id})}" method="post">
-        <div th:each="campo : ${form.campos}">
-            <div class="form-group">
-                <label th:for="${campo.id}" th:text="${campo.label}">Campo</label>
-                <input type="text" class="form-control" th:id="${campo.id}" th:name="${campo.id}" th:value="${campo.valor}">
-                <div class="text-danger" th:if="${erros != null and erros[campo.id] != null}" th:text="${erros[campo.id].mensagem}">Erro</div>
-            </div>
+        <div th:each="secao : ${form.secoes}">
+            <fieldset class="mb-4">
+                <legend th:text="${secao.nome}">Título da Seção</legend>
+                <div th:each="campo : ${secao.campos}">
+                    <div class="form-group">
+                        <label th:for="${campo.id}" th:text="${campo.label}">Campo</label>
+
+                        <div th:switch="${campo}">
+                            <textarea th:case="CampoTexto" class="form-control"
+                                      th:id="${campo.id}" th:name="${campo.id}"
+                                      th:text="${campo.valor}"
+                                      th:attr="minlength=${campo.min}, maxlength=${campo.max}, required=${campo.obrigatorio}"
+                                      rows="3" placeholder="${campo.min}-${campo.max} caracteres"></textarea>
+
+                            <div th:case="CampoSelecao">
+                                <select class="form-control" th:id="${campo.id}" th:name="${campo.id}"
+                                        th:attr="required=${campo.obrigatorio}">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option th:each="opcao : ${campo.opcoes}"
+                                            th:value="${opcao instanceof String ? opcao : opcao.id}"
+                                            th:text="${opcao instanceof String ? opcao : opcao.nome}"
+                                            th:selected="${campo.valor == (opcao instanceof String ? opcao : opcao.id)}">Opção</option>
+                                </select>
+                            </div>
+
+                            <input th:case="CampoData" type="date" class="form-control"
+                                   th:id="${campo.id}" th:name="${campo.id}"
+                                   th:value="${campo.valor}" required />
+                        </div>
+
+                        <div class="text-danger" th:if="${erros != null and erros[campo.id] != null}"
+                             th:text="${erros[campo.id].mensagem}">Erro</div>
+
+                        <small id="contador${campo.id.charAt(0).toUpperCase() + campo.id.slice(1)}"
+                               class="form-text text-muted"
+                               th:text="${campo.max - (campo.valor != null ? campo.valor.length : 0)} + ' caracteres restantes'">
+                        </small>
+                    </div>
+                </div>
+            </fieldset>
         </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
+        <button type="submit" class="btn btn-primary"
+                th:text="${form.isEditando() ? 'Atualizar' : 'Salvar'}">Salvar</button>
+        <a th:href="@{/form/{formId}(formId=${form.id})}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function atualizarContador(campo) {
+            const maxLength = campo.getAttribute('maxlength');
+            const currentLength = campo.value.length;
+            const contador = document.getElementById(`contador${campo.id.charAt(0).toUpperCase() + campo.id.slice(1)}`);
+            if (contador) {
+                contador.textContent = `${maxLength - currentLength} caracteres restantes`;
+            }
+        }
+
+        const camposComContador = document.querySelectorAll('input[maxlength], textarea[maxlength]');
+
+        camposComContador.forEach(campo => {
+            atualizarContador(campo);
+            campo.addEventListener('input', function() {
+                atualizarContador(campo);
+            });
+        });
+    });
+</script>
 </body>
 </html>

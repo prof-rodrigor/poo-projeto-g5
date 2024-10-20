@@ -2,7 +2,7 @@ package br.ufpb.dcx.rodrigor.projetos.form.controller;
 
 import br.ufpb.dcx.rodrigor.projetos.Keys;
 import br.ufpb.dcx.rodrigor.projetos.form.model.Formulario;
-import br.ufpb.dcx.rodrigor.projetos.form.model.ResultadoValidacao;
+import br.ufpb.dcx.rodrigor.projetos.form.model.validadores.ResultadoValidacao;
 import br.ufpb.dcx.rodrigor.projetos.form.services.FormService;
 import io.javalin.http.Context;
 import org.apache.logging.log4j.LogManager;
@@ -39,18 +39,21 @@ public class FormController {
         }
 
         Map<String, ResultadoValidacao> erros = new LinkedHashMap<>();
-        form.getCampos().forEach(campo -> {
-            String valor = context.formParam(campo.getId());
-            if (campo.isObrigatorio() && (valor == null || valor.trim().isEmpty())) {
-                erros.put(campo.getId(), new ResultadoValidacao("Campo obrigatório"));
-            } else {
-                campo.setValor(valor);
-                ResultadoValidacao resultado = campo.validar();
-                if (!resultado.ok()) {
-                    erros.put(campo.getId(), resultado);
+        form.getSecoes().forEach(secao -> {
+            secao.getCampos().forEach(campo -> {
+                String valor = context.formParam(campo.getId());
+                if (campo.isObrigatorio() && (valor == null || valor.trim().isEmpty())) {
+                    erros.put(campo.getId(), new ResultadoValidacao("Campo obrigatório"));
+                } else {
+                    campo.setValor(valor);
+                    ResultadoValidacao resultado = campo.validar();
+                    if (!resultado.ok()) {
+                        erros.put(campo.getId(), resultado);
+                    }
                 }
-            }
+            });
         });
+
 
 
         if (erros.isEmpty()) {

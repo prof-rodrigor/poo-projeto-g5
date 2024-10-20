@@ -13,10 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -30,10 +27,6 @@ public class EnderecoService extends AbstractService {
         MongoDatabase database = mongoDBConnector.getDatabase("empresas");
         this.collection = database.getCollection("enderecos");
     }
-    //    public void adicionarEndereco(Endereco endereco){
-//        endereco.setId(String.valueOf(ultimoIdEndereco++));
-//        enderecos.add(endereco);
-//    }
 
     public List<Endereco> listarEnderecos() {
         List<Endereco> enderecos = new ArrayList<>();
@@ -58,6 +51,16 @@ public class EnderecoService extends AbstractService {
     public void atualizarEndereco(Endereco enderecoAtualizado) {
         Document doc = enderecoToDocument(enderecoAtualizado);
         collection.replaceOne(eq("_id", new ObjectId(enderecoAtualizado.getId())), doc);
+    }
+
+    public List<String> getEstadosBrasil() {
+        return Arrays.asList(
+                "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará",
+                "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão",
+                "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará",
+                "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro",
+                "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima",
+                "Santa Catarina", "São Paulo", "Sergipe", "Tocantins");
     }
 
     public static Endereco documentToEndereco(Document doc) {

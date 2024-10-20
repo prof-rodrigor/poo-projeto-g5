@@ -32,11 +32,15 @@ public class ProjetoController {
 
     public void mostrarFormularioEdicao(Context ctx) {
         ProjetoService projetoService = ctx.appData(Keys.PROJETO_SERVICE.key());
+        EmpresaService empresaService = ctx.appData(Keys.EMPRESA_SERVICE.key());
+        ParticipanteService participanteService = ctx.appData(Keys.PARTICIPANTE_SERVICE.key());
 
         String id = ctx.pathParam("id");
         Projeto projeto = projetoService.buscarProjetoPorId(id).get();
 
         if (projeto != null) {
+            ctx.attribute("professores", participanteService.listarProfessores());
+            ctx.attribute("empresas", empresaService.listarEmpresasFormulario());
             ctx.attribute("projeto", projeto);
             ctx.render("/projetos/form_projeto.html");
         } else {

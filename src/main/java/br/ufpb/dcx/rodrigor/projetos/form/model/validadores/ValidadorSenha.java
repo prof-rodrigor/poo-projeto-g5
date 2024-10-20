@@ -1,8 +1,5 @@
 package br.ufpb.dcx.rodrigor.projetos.form.model.validadores;
 
-import br.ufpb.dcx.rodrigor.projetos.form.model.ResultadoValidacao;
-import br.ufpb.dcx.rodrigor.projetos.form.model.ValidadorCampo;
-
 public class ValidadorSenha implements ValidadorCampo {
 
     private int min;

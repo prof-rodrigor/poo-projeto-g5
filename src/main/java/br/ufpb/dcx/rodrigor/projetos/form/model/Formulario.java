@@ -1,15 +1,16 @@
 package br.ufpb.dcx.rodrigor.projetos.form.model;
 
-import java.util.LinkedHashMap;
+import br.ufpb.dcx.rodrigor.projetos.form.model.persistencia.PersistenciaFormulario;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Formulario {
 
-    private Map<String,Campo> campos = new LinkedHashMap<>();
+    private List<Secao> secoes = new ArrayList<>();
     private String nome;
+    private Titulo titulo;
     private final String id;
-
     private PersistenciaFormulario persistencia;
 
     public Formulario( String id, String nome){
@@ -17,24 +18,28 @@ public class Formulario {
         this.id = id;
     }
 
-    public void addCampo(Campo campo){
-        campos.put(campo.getId(), campo);
+    public void addSecao(Secao secao){
+        secoes.add(secao);
     }
 
-    public Campo getCampo(String id){
-        return campos.get(id);
+    public List<Secao> getSecoes(){
+        return secoes;
     }
 
-    public List<Campo> getCampos(){
-        return List.copyOf(campos.values());
-    }
-
-    public String getId(){
+    public String getId() {
         return id;
     }
 
     public String getNome(){
         return nome;
+    }
+
+    public Titulo getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(Titulo titulo) {
+        this.titulo = titulo;
     }
 
     public void setNome(String nome){
@@ -45,10 +50,14 @@ public class Formulario {
         this.persistencia = persistencia;
     }
 
+    public boolean isEditando() {
+        return this.id != null;
+    }
+
     @Override
     public String toString() {
         return "Formulario{" +
-                "campos=" + campos +
+                "campos=" + secoes +
                 ", nome='" + nome + '\'' +
                 ", id='" + id + '\'' +
                 '}';

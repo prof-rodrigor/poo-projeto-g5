@@ -76,7 +76,7 @@ public class EmpresaController {
             endereco.setBairro(ctx.formParam("bairro"));
             endereco.setRua(ctx.formParam("rua"));
             endereco.setNumero(ctx.formParam("numero"));
-            endereco.setComplemento(ctx.pathParam("complemento"));
+            endereco.setComplemento(ctx.formParam("complemento"));
             empresa.setEndereco(enderecoService.buscarEnderecoPorId(enderecoService.adicionarEndereco(endereco)).get());
 
             return empresa;

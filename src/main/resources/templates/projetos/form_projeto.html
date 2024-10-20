@@ -22,7 +22,7 @@
             <select class="form-select" id="coordenador" name="coordenador" required>
                 <option value="">Selecione um coordenador</option>
                 <th:block th:each="professor : ${professores}">
-                    <option th:value="${professor.id}" th:selected="${projeto != null && projeto.coordenador != null && projeto.coordenador.id == professor.id}" th:text="${professor.nome}"></option>
+                    <option th:value="${professor.id}" th:selected="${projeto != null && projeto.coordenador != null && projeto.coordenador.id.toHexString() == professor.id.toHexString()}" th:text="${professor.nome}"></option>
                 </th:block>
             </select>
         </div>
