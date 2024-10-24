@@ -1,13 +1,20 @@
 package br.ufpb.dcx.rodrigor.projetos;
 
 import br.ufpb.dcx.rodrigor.projetos.db.MongoDBConnector;
+import br.ufpb.dcx.rodrigor.projetos.empresa.controllers.EmpresaController;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EmpresaService;
+import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
+import br.ufpb.dcx.rodrigor.projetos.form.controller.FormController;
+import br.ufpb.dcx.rodrigor.projetos.form.services.FormService;
 import br.ufpb.dcx.rodrigor.projetos.login.LoginController;
+import br.ufpb.dcx.rodrigor.projetos.login.UsuarioService;
 import br.ufpb.dcx.rodrigor.projetos.participante.controllers.ParticipanteController;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
 import br.ufpb.dcx.rodrigor.projetos.projeto.controllers.ProjetoController;
 import br.ufpb.dcx.rodrigor.projetos.projeto.services.ProjetoService;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
+import io.javalin.http.Context;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.function.Consumer;
+
 
 public class App {
     private static final Logger logger = LogManager.getLogger();
@@ -47,8 +55,14 @@ public class App {
     }
     private void registrarServicos(JavalinConfig config, MongoDBConnector mongoDBConnector) {
         ParticipanteService participanteService = new ParticipanteService(mongoDBConnector);
-        config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService));
+        EnderecoService enderecoService = new EnderecoService(mongoDBConnector);
+        EmpresaService empresaService = new EmpresaService(mongoDBConnector, enderecoService);
+        config.appData(Keys.PROJETO_SERVICE.key(), new ProjetoService(mongoDBConnector, participanteService, empresaService));
         config.appData(Keys.PARTICIPANTE_SERVICE.key(), participanteService);
+        config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
+        config.appData(Keys.ENDERECO_SERVICE.key(), enderecoService);
+        config.appData(Keys.FORM_SERVICE.key(), new FormService(mongoDBConnector));
+        config.appData(Keys.USUARIO_SERVICE.key(), new UsuarioService());
     }
     private void configurarPaginasDeErro(Javalin app) {
         app.error(404, ctx -> ctx.render("erro_404.html"));
@@ -62,7 +76,11 @@ public class App {
 
         Consumer<JavalinConfig> configConsumer = this::configureJavalin;
 
-        return Javalin.create(configConsumer).start(porta);
+        // Adicionando configuração de arquivos estáticos
+        return Javalin.create(config -> {
+            config.staticFiles.add("/public");
+            configureJavalin(config); // Manter as outras configurações
+        }).start(porta);
     }
 
     private void configureJavalin(JavalinConfig config) {
@@ -139,24 +157,30 @@ public class App {
 
     private void configurarRotas(Javalin app) {
         LoginController loginController = new LoginController();
+
+        // Rotas públicas
         app.get("/", ctx -> ctx.redirect("/login"));
         app.get("/login", loginController::mostrarPaginaLogin);
         app.post("/login", loginController::processarLogin);
         app.get("/logout", loginController::logout);
 
-        app.get("/area-interna", ctx -> {
-            if (ctx.sessionAttribute("usuario") == null) {
-                ctx.redirect("/login");
-            } else {
-                ctx.render("area_interna.html");
+        app.before(ctx -> {
+            String path = ctx.path();
+            if (!path.equals("/login") && !path.equals("/")) {
+                verificarAutenticacao(ctx);
             }
         });
+
+        // Rotas protegidas
+        app.get("/area-interna", ctx -> ctx.render("area_interna.html"));
 
         ProjetoController projetoController = new ProjetoController();
         app.get("/projetos", projetoController::listarProjetos);
         app.get("/projetos/novo", projetoController::mostrarFormulario);
         app.post("/projetos", projetoController::adicionarProjeto);
         app.get("/projetos/{id}/remover", projetoController::removerProjeto);
+        app.get("/projetos/{id}/editar", projetoController::mostrarFormularioEdicao);
+        app.post("/projetos/{id}/atualizar", projetoController::atualizarProjeto);
 
         ParticipanteController participanteController = new ParticipanteController();
         app.get("/participantes", participanteController::listarParticipantes);
@@ -164,7 +188,32 @@ public class App {
         app.post("/participantes", participanteController::adicionarParticipante);
         app.get("/participantes/{id}/remover", participanteController::removerParticipante);
 
+        EmpresaController empresaController = new EmpresaController();
+        app.get("/empresas", empresaController::listarEmpresas);
+        app.get("/empresas/novo", empresaController::mostrarFormulario);
+        app.post("/empresas", empresaController::adicionarEmpresa);
+        app.get("/empresas/{id}/remover", empresaController::removerEmpresa);
+        app.get("/empresas/{id}/editar", empresaController::mostrarFormularioEdicao);
+        app.post("/empresas/{id}/atualizar", empresaController::atualizarEmpresa);
+
+        FormController formController = new FormController();
+        app.get("/form/{formId}", formController::abrirFormulario);
+        app.post("/form/{formId}", formController::validarFormulario);
     }
+
+    private void verificarAutenticacao(Context ctx) {
+        logger.info("Verificando autenticação para a rota: {}", ctx.path());
+        String autenticado = ctx.cookie("usuario_autenticado");
+
+        if (autenticado == null || !autenticado.equals("true")) {
+            logger.warn("Acesso negado. Usuário não autenticado tentando acessar: {}", ctx.path());
+            ctx.redirect("/login?erro=2");
+        }
+    }
+
+
+
+
 
     private Properties carregarPropriedades() {
         Properties prop = new Properties();

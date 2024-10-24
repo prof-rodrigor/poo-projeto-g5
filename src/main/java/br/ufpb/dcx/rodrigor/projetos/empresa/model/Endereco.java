@@ -1,40 +1,36 @@
 package br.ufpb.dcx.rodrigor.projetos.empresa.model;
 
-public class Endereco {
-    private String cidade, estado, rua, numero, complemento;
 
-    public Endereco(String cidade, String estado, String rua, String numero) {
-        testaEntrada(cidade);
-        testaEntrada(estado);
-        testaEntrada(rua);
-        testaNumero(numero);
+public class Endereco {
+    private String id;
+
+    private String cidade;
+
+    private String estado;
+
+    private String bairro;
+
+    private String rua;
+
+    private String numero;
+
+    private String complemento;
+
+    public Endereco() {}
+
+    public Endereco(String cidade, String estado, String bairro, String rua, String numero) {
         this.cidade = cidade;
         this.estado = estado;
+        this.bairro = bairro;
         this.rua = rua;
         this.numero = numero;
     }
 
-    public Endereco() {
-    }
-
-    public void testaEntrada(String x){
-        if (x == null || x.isEmpty()){ throw new IllegalArgumentException("É obrigatório escrever algo neste campo.");}
-    }
-
-    public void testaNumero(String x) {
-        for (int i = 0; i < x.length(); i++) {
-            char c = x.charAt(i);
-            if (!Character.isDigit(c)) {
-                throw new IllegalArgumentException("O número informado contém valores que não são números.");
-            }
-        }
-    }
     public String getCidade() {
         return cidade;
     }
 
     public void setCidade(String cidade) {
-        testaEntrada(cidade);
         this.cidade = cidade;
     }
 
@@ -43,8 +39,15 @@ public class Endereco {
     }
 
     public void setEstado(String estado) {
-        testaEntrada(estado);
         this.estado = estado;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
     }
 
     public String getRua() {
@@ -52,7 +55,6 @@ public class Endereco {
     }
 
     public void setRua(String rua) {
-        testaEntrada(rua);
         this.rua = rua;
     }
 
@@ -61,9 +63,9 @@ public class Endereco {
     }
 
     public void setNumero(String numero) {
-        testaNumero(numero);
         this.numero = numero;
     }
+
 
     public String getComplemento() {
         return complemento;
@@ -71,5 +73,22 @@ public class Endereco {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return cidade + " - " +
+                estado + "\n" +
+                rua + ", " +
+                bairro + ", " +
+                numero;
     }
 }

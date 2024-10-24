@@ -20,7 +20,7 @@ public class ParticipanteController {
 
     public void mostrarFormularioCadastro(Context ctx) {
         ctx.attribute("categorias", CategoriaParticipante.values());
-        ctx.render("/participantes/formulario_participante.html");
+        ctx.render("/participantes/form_participante.html");
     }
 
     public void adicionarParticipante(Context ctx) {
