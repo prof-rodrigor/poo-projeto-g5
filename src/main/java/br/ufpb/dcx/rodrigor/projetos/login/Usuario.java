@@ -1,5 +1,8 @@
 package br.ufpb.dcx.rodrigor.projetos.login;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class Usuario {
     private String login;
     private String nome;

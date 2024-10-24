@@ -7,6 +7,7 @@ import br.ufpb.dcx.rodrigor.projetos.empresa.services.EnderecoService;
 import br.ufpb.dcx.rodrigor.projetos.form.controller.FormController;
 import br.ufpb.dcx.rodrigor.projetos.form.services.FormService;
 import br.ufpb.dcx.rodrigor.projetos.login.LoginController;
+import br.ufpb.dcx.rodrigor.projetos.login.UsuarioService;
 import br.ufpb.dcx.rodrigor.projetos.participante.controllers.ParticipanteController;
 import br.ufpb.dcx.rodrigor.projetos.participante.services.ParticipanteService;
 import br.ufpb.dcx.rodrigor.projetos.projeto.controllers.ProjetoController;
@@ -61,6 +62,7 @@ public class App {
         config.appData(Keys.EMPRESA_SERVICE.key(), empresaService);
         config.appData(Keys.ENDERECO_SERVICE.key(), enderecoService);
         config.appData(Keys.FORM_SERVICE.key(), new FormService(mongoDBConnector));
+        config.appData(Keys.USUARIO_SERVICE.key(), new UsuarioService());
     }
     private void configurarPaginasDeErro(Javalin app) {
         app.error(404, ctx -> ctx.render("erro_404.html"));
